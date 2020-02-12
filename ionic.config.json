@@ -1,0 +1,7 @@
+{
+  "name": "M2PGI-Phenix-Maxime-Deroissart",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

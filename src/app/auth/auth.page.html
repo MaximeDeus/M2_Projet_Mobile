@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>auth</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<!--
+<ion-content>
+  <h3>Authentification avec Google v1</h3>
+  <div *ngIf="afAuth.user | async as user; else showLogin">
+    <h1>Hello {{ user.displayName }}!</h1>
+    <button (click)="logout()">Logout</button>
+  </div>
+  <ng-template #showLogin>
+    <p>Please login.</p>
+    <button (click)="login()">Login with Google</button>
+  </ng-template>
+</ion-content>
+-->
+
+<ion-content>
+<h3>Authentification avec Google v2</h3>
+<form (ngSubmit)="login()">
+  <ion-item>
+    <ion-label>Email</ion-label>
+    <ion-input type="text" [(ngModel)]="email" name="title"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Password</ion-label>
+    <ion-textarea [(ngModel)]="password" name="password"></ion-textarea>
+  </ion-item>
+  <ion-button color="light" type="submit" block>Se connecter</ion-button>
+</form>
+</ion-content>
