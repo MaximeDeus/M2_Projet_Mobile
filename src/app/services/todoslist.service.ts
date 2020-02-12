@@ -14,13 +14,21 @@ export class TodoslistService {
   private todos: Observable<Array<Todo>>;
   
   constructor(private db: AngularFirestore) {
-    this.todosCollection = db.collection<Todo>('todos');
- 
+    // console.log('toto')
+    // TODO iterate on collection list
+    // TODO for each doc ('listId'), filter with owner and shared lists
+    // TODO return all filtered list (Array of Todolist containing Array of todo)
+    // TODO add field name (of the list) on list collection
+
+    this.todosCollection = db.collection<Todo>('list').doc('{listId}').collection('item');
     this.todos = this.todosCollection.snapshotChanges().pipe(
       map(actions => {
+        // console.log('titi');
         return actions.map(a => {
           const data = a.payload.doc.data();
+          console.log ("data = ", data);
           const id = a.payload.doc.id;
+          console.log ("id = ", id);
           return { id, ...data };
         });
       })

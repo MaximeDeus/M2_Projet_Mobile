@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AngularFireAuthGuard, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['auth']);
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['todoslist']); // TODO must be 'auth' value
 
 const routes: Routes = [
   { path: '', redirectTo: 'todoslist', pathMatch: 'full' },
