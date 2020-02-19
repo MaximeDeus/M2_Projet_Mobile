@@ -9,13 +9,16 @@ import { auth } from 'firebase/app';
 })
 export class AuthPage {
   email: string = null;
-  password: string = null;
+  password:string = null;
+
 
   constructor(public afAuth: AngularFireAuth) { }
   login() {
     console.log(`email : ${this.email} \n password : ${this.password} `);
+    this.afAuth.auth.signInWithEmailAndPassword(this.email,this.password).then((res)=> console.log(res));
     // this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider());
   }
+  // TODO move this method
   logout() {
     this.afAuth.auth.signOut();
   }
