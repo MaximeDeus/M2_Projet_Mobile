@@ -18,9 +18,9 @@ export class AddtodoPage implements OnInit {
   ngOnInit() {
   }
 
-  addList(){
+  addTodo(){
     let item = { title: this.title, isDone: false } as Todo;
-    this.listService.add(item);
+    this.listService.addTodo(item,'toto');
     this.router.navigate(['']);
   }
 }
