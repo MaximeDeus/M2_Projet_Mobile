@@ -1,50 +1,65 @@
-import { Injectable } from '@angular/core';
-import { Todo } from '../model/todo';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
+import {combineLatest, Observable} from 'rxjs';
+import {flatMap, map} from 'rxjs/operators';
+import {Todolist} from "../model/todolist";
+import {Todo} from "../model/todo";
+import {toTitleCase} from "codelyzer/util/utils";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class TodoslistService {
 
-  private todosCollection: AngularFirestoreCollection<Todo>;
+    private todolistsCollection: AngularFirestoreCollection<Todolist>;
+    private todolists: Observable<Array<Todolist>>;
+    private items: Array<Todo>;
 
-  private todos: Observable<Array<Todo>>;
-  
-  constructor(private db: AngularFirestore) {
-    // console.log('toto')
-    // TODO iterate on collection list
-    // TODO for each doc ('listId'), filter with owner and shared lists
-    // TODO return all filtered list (Array of Todolist containing Array of todo)
-    // TODO add field name (of the list) on list collection
-
-    this.todosCollection = db.collection<Todo>('list').doc('{listId}').collection('item');
-    this.todos = this.todosCollection.snapshotChanges().pipe(
-      map(actions => {
-        // console.log('titi');
-        return actions.map(a => {
-          const data = a.payload.doc.data();
-          console.log ("data = ", data);
-          const id = a.payload.doc.id;
-          console.log ("id = ", id);
-          return { id, ...data };
+    constructor(private db: AngularFirestore) {
+        // return all list (Array of Observable Todolist containing Array of todo)
+        // TODO implements user filtering
+        // TODO implements shared lists
+        // Load collection containing all todolist document
+        this.todolistsCollection = db.collection<Todolist>('list');
+        this.todolists = this.todolistsCollection.snapshotChanges().pipe(
+            map(this.convertSnapshots), // data of each todolist
+            map((allTodolistDatas:Todolist[]) => allTodolistDatas.
+            map(allTodolistDatas => this.todolistsCollection.doc(allTodolistDatas.id).collection<Todo>('item').snapshotChanges().pipe( // rename parameter to todolistDatas ?
+            map(this.convertSnapshots),
+            map((allTodosDatas:Array<Todo>) => Object.assign(allTodolistDatas, {['todos']: allTodosDatas})
+            )
+        ))
+    ),
+            flatMap(combined => combineLatest(combined))
+            );
+    }
+    convertSnapshots<T> (snaps) {
+        return <T[]>snaps.map(snap => {
+            return {
+                id: snap.payload.doc.id,
+            ...snap.payload.doc.data()
+        };
         });
-      })
-    );
-  }
-  
-  get(): Observable<Array<Todo>> {
-    return this.todos;
-  }
+    }
 
-  add(todo: Todo) {
-    return this.todosCollection.add(todo);
-  }
+    get(): Observable<Array<Todolist>> {
+        return this.todolists;
+    }
 
-  delete(todo: Todo){
-    return this.todosCollection.doc(todo.id).delete();
-  }
+    addTodolist(todolist: Todolist) {
+        return this.todolistsCollection.add(todolist);
+    }
+
+    addTodo(todo: Todo, todolistID: string) {
+        return this.todolistsCollection.doc(todolistID).collection('item').add(todo);
+    }
+
+    deleteTodolist(todolist: Todolist) {
+        return this.todolistsCollection.doc(todolist.id).delete();
+    }
+
+    deleteTodo(todo: Todo, todolistID: string) {
+        return this.todolistsCollection.doc(todolistID).collection('item').doc(todo.id).delete();
+    }
 
 }
