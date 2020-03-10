@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
-import {combineLatest, Observable} from 'rxjs';
-import {flatMap, map} from 'rxjs/operators';
+import {combineLatest,  of,Observable} from 'rxjs';
+import {flatMap, map, switchMap} from 'rxjs/operators';
 import {Todolist} from "../model/todolist";
 import {Todo} from "../model/todo";
 import {toTitleCase} from "codelyzer/util/utils";
@@ -16,6 +16,8 @@ export class TodoslistService {
     private todolistsCollection: AngularFirestoreCollection<Todolist>;
     private todolists: Observable<Array<Todolist>>;
     private items: Array<Todo>;
+    private allowRead: Array<Todo>;
+    private allowWrite: Array<Todo>;
 
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
         const user = afAuth.auth.currentUser;
@@ -25,18 +27,44 @@ export class TodoslistService {
         console.log('user.uid' + user.uid);
         console.log('user.photoURL' + user.photoURL);
 
-/**
+/** TODO
         if (user) {
             // User is signed in.
         } else {
             // No user is signed in.
         }
 */
+
+const ownerRef = db.collection<Todolist>('list',ref =>
+    ref.where('owner', '==', user.email));
+const allowReadRef = db.collection<Todolist>('list',ref =>
+    ref.where("allowRead", "array-contains", user.uid));
+const allowWriteRef = db.collection<Todolist>('list',ref =>
+    ref.where("allowWrite", "array-contains", user.uid));
+
+this.todolists = combineLatest(ownerRef.valueChanges(), allowReadRef.valueChanges(),allowWriteRef.valueChanges())
+    .pipe(
+        switchMap(filteredList => {
+            const [ownerLists, allowReadLists , allowWriteLists] = filteredList;
+            const combined = ownerLists.concat(allowReadLists,allowWriteLists);
+            console.log('filtered : ' + JSON.stringify(filteredList));
+            console.log('ownerLists : ' + JSON.stringify(ownerLists));
+            console.log('allowReadLists : ' + JSON.stringify(allowReadLists));
+            console.log('allowWriteLists : ' + JSON.stringify(allowWriteLists));
+            console.log('combined : ' + JSON.stringify(combined));
+            return of(combined);
+        })
+    );
+this.todolists.subscribe(value =>
+    console.log('value : ' + JSON.stringify(value))
+)
+
         // return all list (Array of Observable Todolist containing Array of todo)
-        // TODO implements user filtering
         // TODO implements shared lists
         // Load collection containing all todolist document
-        this.todolistsCollection = db.collection<Todolist>('list',ref => ref.where('owner', '==', user.email));
+        this.todolistsCollection = db.collection<Todolist>('list',ref =>
+            ref.where('owner', '==', user.email)
+               .where("allowRead", "array-contains", user.uid));
         this.todolists = this.todolistsCollection.snapshotChanges().pipe(
             map(this.convertSnapshots), // data of each todolist
             map((allTodolistDatas:Todolist[]) => allTodolistDatas.
