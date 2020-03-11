@@ -15,6 +15,7 @@ const routes: Routes = [
 },
   {
     path: 'addtodo',
+    canActivate: [AngularFireAuthGuard],
     loadChildren: () => import('./addtodo/addtodo.module').then( m => m.AddtodoPageModule)
   },
   {
