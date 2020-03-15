@@ -175,38 +175,9 @@ console.log('todolist : ', JSON.stringify(todolist));
             ),
             flatMap(combined => combineLatest(combined))
         );
-        console.log ('todolist : '+ JSON.stringify(this.todolists));
     }
-            /**
-            map(actions => {
-                return actions.map(a => {
-                    console.log("a :", a);
-                    const id = a.payload.doc.id;
-                    console.log("id = ", id);
-                    // TODO for each doc filter with owner (and shared lists ?)
-                    const todolist = a.payload.doc.data();
-                    console.log("todolist = ", todolist);
-                    return {id, ...todolist};
-                })}),
-            map (todolists => {
-                todolists.map (todolist => {
-                    this.todolistsCollection.doc(todolist.id).collection('item').snapshotChanges().pipe(
-                        map(actions => {
-                            return actions.map(a => {
-                                    console.log("a :", a);
-                                    const id = a.payload.doc.id;
-                                    console.log("id = ", id);
-                                    // TODO for each doc filter with owner (and shared lists ?)
-                                    const item = a.payload.doc.data();
-                                    console.log("item = ", item);
-                                    return {id, ...item};
-                                }
-                            )
-                        }))})
-                }))};
-             */
 
-    convertSnapshots<T> (snaps) {
+    convertSnapshots<T>(snaps) {
         return <T[]>snaps.map(snap => {
             return {
                 id: snap.payload.doc.id,
@@ -215,7 +186,7 @@ console.log('todolist : ', JSON.stringify(todolist));
         });
     }
 
-    get(): Observable<Array<Todolist>> {
+    get(): Observable<Array<Array<Todolist>>> {
         return this.mergedTodolists;
     }
 

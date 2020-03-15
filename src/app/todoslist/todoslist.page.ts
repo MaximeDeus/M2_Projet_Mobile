@@ -10,21 +10,34 @@ import {Todolist} from "../model/todolist";
   styleUrls: ['./todoslist.page.scss'],
 })
 export class TodoslistPage implements OnInit {
-// TODO Create Todolist model (field : todos : Arraylist<Todo>) OK must be tested
-  // TODO change todos type : Observable<Array<Todolist>> OK must be tested
-  private todolists$: Observable<Array<Todolist>>;
+  private todolists$: Observable<Array<Array<Todolist>>>;
+  private ownerTodolist:Array<Todolist>;
+  private allowReadTodolist:Array<Todolist>;
+  private allowWriteTodolist:Array<Todolist>;
+
 
   constructor(private listService: TodoslistService) {}
 
   ngOnInit(): void {
     this.todolists$ = this.listService.get();
-    // TODO iterate of each list
-    // TODO display nameList, all orderer todos (1,2..,length) and owner of the list
-    // TODO uncomment !!! console.log('liste des todo' , this.todolists$.subscribe(todo => console.log(todo)));
+    this.todolists$.subscribe(todolists => {
+    // console.log('this.todolists$ inside = ' , JSON.stringify(this.todolists$));
+    this.ownerTodolist = todolists[0];
+      // console.log('this.ownertodolist inside = ' , JSON.stringify(this.ownerTodolist));
+      // console.log('value = ' , JSON.stringify(value));
+    this.allowReadTodolist = todolists[1];
+    this.allowWriteTodolist = todolists[2];
+        // Display data in html file
+  })
+    console.log ('this.todolists$ outside = ' , this.todolists$);
   }  
 /**
+  TODO MUST BE DONE
   delete(todo: Todo){
     this.listService.delete(todo);
+  }
+ delete(todolist: Todolist){
+    this.listService.delete(todolist);
   }
  */
 }
