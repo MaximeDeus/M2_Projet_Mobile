@@ -9,7 +9,41 @@
 
 <ion-content fullscreen>
   <ion-list>
-    <ion-item-sliding *ngFor="let todolist of todolists$ | async ; let i1 = index" [attr.data-index]="i1">
+    <ion-item-sliding *ngFor="let todolist of ownerTodolist ; let i1 = index" [attr.data-index]="i1">
+      <ion-item>
+        <ion-label>
+          <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item *ngFor="let todo of todolist.todos; let i2 = index" [attr.data-index]="i2">
+        <ion-label>
+          <h2>{{'Todo n°' + (i2+1) + ' : ' + todo.title }}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="delete(todolist)">
+          <ion-icon slot="top" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding *ngFor="let todolist of allowReadTodolist ; let i1 = index" [attr.data-index]="i1">
+      <ion-item>
+        <ion-label>
+          <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item *ngFor="let todo of todolist.todos; let i2 = index" [attr.data-index]="i2">
+        <ion-label>
+          <h2>{{'Todo n°' + (i2+1) + ' : ' + todo.title }}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="delete(todolist)">
+          <ion-icon slot="top" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding *ngFor="let todolist of allowWriteTodolist ; let i1 = index" [attr.data-index]="i1">
       <ion-item>
         <ion-label>
           <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
