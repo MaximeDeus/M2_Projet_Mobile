@@ -16,4 +16,11 @@ export class UserService {
   get(): User {
     return this.user;
   }
+
+  login(email,password) {
+    this.afAuth.auth.signInWithEmailAndPassword(email, password);
+  }
+  logout() {
+    this.afAuth.auth.signOut();
+  }
 }

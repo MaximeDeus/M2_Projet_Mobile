@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
+import {UserService} from "../services/user.service";
 
 @Component({
   selector: 'app-auth',
@@ -12,15 +13,12 @@ export class AuthPage {
   password:string = null;
 
 
-  constructor(public afAuth: AngularFireAuth) { }
+  constructor(private userService: UserService) { }
   login() {
-    console.log(`email : ${this.email} \n password : ${this.password} `);
-    this.afAuth.auth.signInWithEmailAndPassword(this.email,this.password).then((res)=> console.log(res));
-    // this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider());
+    this.userService.login(this.email,this.password);
   }
-  // TODO move this method
   logout() {
-    this.afAuth.auth.signOut();
+    this.userService.logout();
   }
 
 }
