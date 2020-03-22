@@ -3,6 +3,7 @@ import {Todolist} from "../model/todolist";
 import {ActivatedRoute} from "@angular/router";
 import {TodoslistService} from "../services/todoslist.service";
 import {Todo} from "../model/todo";
+import {AlertController} from "@ionic/angular";
 
 @Component({
   selector: 'app-todolist',
@@ -14,7 +15,7 @@ export class TodolistPage implements OnInit {
   private id: string;
   private todolist:Todolist;
 
-  constructor(private todolistService: TodoslistService , private route: ActivatedRoute) {}
+  constructor(private todolistService: TodoslistService , private route: ActivatedRoute,public alertCtrl: AlertController) {}
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
@@ -34,4 +35,45 @@ export class TodolistPage implements OnInit {
     delete(todo: Todo){
         this.todolistService.deleteTodo(todo,this.id);
     }
+
+  async displayPromptAddTodo() {
+    let alert = await this.alertCtrl.create({
+      header: 'New Todo',
+
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'Exercise 2 p.47',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Create Todo',
+          handler: data => {
+            if (data.name) {
+              const todo = this.createTodo(data.name);
+              this.todolistService.addTodo(todo,this.id).then(res => {
+              })
+            } else {
+              return false;
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private createTodo(name: string): Todo {
+    const todo: Todo =
+        {
+          isDone: false,
+          title: name
+        }
+    return todo;
+  }
 }
