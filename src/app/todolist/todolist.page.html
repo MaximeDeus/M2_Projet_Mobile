@@ -12,12 +12,15 @@
         <ion-label>
           <h2>{{ 'Todo n°' + (i+1) + ' : ' +  todo.title}}</h2>
         </ion-label>
-      </ion-item> <ion-item-options side="end">
+      </ion-item>
+      <ion-item-options side="end">
       <ion-item-option color="danger" (click)="delete(todo)">
             <ion-icon slot="top" name="trash"></ion-icon>
       </ion-item-option>
     </ion-item-options>
-
     </ion-item-sliding>
   </ion-list>
+  <section>
+    <ion-button (click)="displayPromptAddTodo()">New todo</ion-button>
+  </section>
 </ion-content>
