@@ -30,6 +30,13 @@ const routes: Routes = [
     path: 'forgotpassword',
     loadChildren: () => import('./forgotpassword/forgotpassword.module').then( m => m.ForgotpasswordPageModule)
   },
+  {
+    path: 'todoslist/:id',
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin},
+    loadChildren: () => import('./todolist/todolist.module').then( m => m.TodolistPageModule)
+  },
+
 
 ];
 
