@@ -5,6 +5,7 @@ import {flatMap, map} from 'rxjs/operators';
 import {Todolist} from "../model/todolist";
 import {Todo} from "../model/todo";
 import {AngularFireAuth} from '@angular/fire/auth';
+import {User} from "firebase";
 
 @Injectable({
     providedIn: 'root'
@@ -17,10 +18,10 @@ export class TodoslistService {
     private todolistsQueries: Array<AngularFirestoreCollection<Todolist>>;
     private todolists: Array<Observable<Array<Todolist>>>;
     private mergedTodolists: Observable<Array<Array<Todolist>>>;
+    private user:User
 
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
-        const user = afAuth.auth.currentUser;
-
+        this.user = afAuth.auth.currentUser; // TODO move inside if
         /** TODO
          if (user) {
             // User is signed in.
@@ -33,11 +34,11 @@ export class TodoslistService {
         this.todolistsCollection = db.collection<Todolist>('list');
 
         this.ownerQuery = db.collection<Todolist>('list', ref =>
-            ref.where('owner', '==', user.email));
+            ref.where('owner', '==', this.user.email));
         this.allowReadQuery = db.collection<Todolist>('list', ref =>
-            ref.where("allowRead", "array-contains", user.uid));
+            ref.where("allowRead", "array-contains", this.user.uid));
         this.allowWriteQuery = db.collection<Todolist>('list', ref =>
-            ref.where("allowWrite", "array-contains", user.uid));
+            ref.where("allowWrite", "array-contains", this.user.uid));
 
         this.todolistsQueries = [
             this.ownerQuery,
@@ -96,6 +97,15 @@ export class TodoslistService {
                 ...snap.payload.doc.data()
             };
         });
+    }
+
+    /**
+     * return todolist based on id
+     */
+    getTodolist(id:string): // TODO Observable<Todolist> {
+    void {
+        // TODO
+        return null;
     }
 
     /**
