@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Todolist} from "../model/todolist";
 import {ActivatedRoute} from "@angular/router";
 import {TodoslistService} from "../services/todoslist.service";
+import {Todo} from "../model/todo";
 
 @Component({
   selector: 'app-todolist',
@@ -29,5 +30,8 @@ export class TodolistPage implements OnInit {
     })
 
     // this.todolist = {allowRead: undefined, allowWrite: undefined, id: "", name: "", owner: "", todos: undefined};
+  }
+    delete(todo: Todo){
+        this.todolistService.deleteTodo(todo,this.id);
     }
 }
