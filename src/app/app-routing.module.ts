@@ -14,11 +14,6 @@ const routes: Routes = [
 
 },
   {
-    path: 'addtodo',
-    canActivate: [AngularFireAuthGuard],
-    loadChildren: () => import('./addtodo/addtodo.module').then( m => m.AddtodoPageModule)
-  },
-  {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule)
   },
@@ -36,8 +31,6 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorizedToLogin},
     loadChildren: () => import('./todolist/todolist.module').then( m => m.TodolistPageModule)
   },
-
-
 ];
 
 @NgModule({
