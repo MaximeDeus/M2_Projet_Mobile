@@ -1,11 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Todos
+      Todolists
     </ion-title>
   </ion-toolbar>
 </ion-header>
-
 
 <ion-content fullscreen>
   <ion-text>
@@ -14,10 +13,11 @@
   <ion-list>
     <H3>My todolists</H3>
     <ion-item-sliding *ngFor="let todolist of ownerTodolist ; let i1 = index" [attr.data-index]="i1">
-      <ion-item>
+      <ion-item [href]="'/todoslist/' + todolist.id" routerDirection="forward">
         <ion-label>
           <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
         </ion-label>
+        <span> {{todolist.todos.length}} todos</span>
       </ion-item>
       <ion-item *ngFor="let todo of todolist.todos; let i2 = index" [attr.data-index]="i2">
         <ion-label>
