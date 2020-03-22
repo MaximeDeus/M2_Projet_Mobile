@@ -19,6 +19,11 @@
         </ion-label>
         <span> {{todolist.todos.length}} todos</span>
       </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="delete(todolist)">
+          <ion-icon slot="top" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
     </ion-item-sliding>
     <H3>My shared lists</H3>
     <ion-item-sliding *ngFor="let todolist of allowReadWriteTodolist ; let i1 = index" [attr.data-index]="i1">
@@ -31,7 +36,6 @@
     </ion-item-sliding>
   </ion-list>
   <section>   
-  <ion-button expand="block" [routerDirection]="'root'"
-  [routerLink]="'/addtodo'">Add a New Todo</ion-button>
+  <ion-button (click)="displayPromptAddTodolist()">New todolist</ion-button>
   </section>
 </ion-content>
