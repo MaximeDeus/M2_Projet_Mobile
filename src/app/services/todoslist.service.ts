@@ -34,7 +34,7 @@ export class TodoslistService {
         this.todolistsCollection = db.collection<Todolist>('list');
 
         this.ownerQuery = db.collection<Todolist>('list', ref =>
-            ref.where('owner', '==', this.user.email));
+            ref.where('owner', '==', this.user.uid));
         this.allowReadQuery = db.collection<Todolist>('list', ref =>
             ref.where("allowRead", "array-contains", this.user.uid));
         this.allowWriteQuery = db.collection<Todolist>('list', ref =>
