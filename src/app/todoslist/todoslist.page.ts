@@ -6,6 +6,8 @@ import {Todolist} from "../model/todolist";
 import {AngularFireAuth} from "@angular/fire/auth";
 import {User} from "firebase";
 import {UserService} from "../services/user.service";
+import {AlertController, NavController} from "@ionic/angular";
+import {isEmpty} from "rxjs/operators";
 
 @Component({
     selector: 'app-todoslist',
@@ -20,8 +22,10 @@ export class TodoslistPage implements OnInit {
     private allowReadWriteTodolist: Array<Todolist>;
     private currentUser: User;
 
-    constructor(private listService: TodoslistService, private userService: UserService) {
 
+    constructor(private listService: TodoslistService, private userService: UserService, public alertCtrl: AlertController) {
+
+        // TODO Try to move inside ngoninit
         this.currentUser = userService.get();
         console.log("Welcome back " + JSON.stringify(this.currentUser));
     }
@@ -57,4 +61,52 @@ export class TodoslistPage implements OnInit {
     this.listService.delete(todolist);
   }
      */
+
+    async displayPromptAddTodolist() {
+        let alert = await this.alertCtrl.create({
+            header: 'New Todolist',
+
+            inputs: [
+                {
+                    name: 'name',
+                    placeholder: 'Do my Homeworks',
+                }
+            ],
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                },
+                {
+                    text: 'Create Todolist',
+                    handler: data => {
+                        if (data.name) {
+                            const todolist = this.createTodolist(data.name);
+                            this.listService.addTodolist(todolist).then(res => {
+                            })
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    private createTodolist(name: string): Todolist {
+        const todolist: Todolist =
+            {
+                allowRead: [],
+                allowWrite: [],
+                name: name,
+                owner: this.currentUser.uid,
+                todos: []
+            }
+        return todolist;
+    }
+
+    delete(todolist: Todolist){
+        this.listService.deleteTodolist(todolist);
+    }
 }
