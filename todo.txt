@@ -1,0 +1,12 @@
+Créer un menu qui contient les onglets
+
+My todolists
+todolists shared with me
+Settings
+About
+
+
+Lancer projet :
+ionic cordova run android -l
+// ionic cordova run browser
+
