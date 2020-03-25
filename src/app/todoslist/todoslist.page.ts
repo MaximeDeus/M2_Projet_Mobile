@@ -12,6 +12,9 @@ import {AlertController, MenuController, NavController} from "@ionic/angular";
 import {isEmpty} from "rxjs/operators";
 import {SplashScreen} from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 @Component({
@@ -182,5 +185,8 @@ export class TodoslistPage implements OnInit {
                 },
             ]
     }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }

@@ -31,7 +31,10 @@
 
 <ion-content fullscreen>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 
   <ion-menu side="start" menuId="first" contentId="content1">
     <ion-header>
@@ -58,7 +61,12 @@
 >>>>>>> Stashed changes
   <ion-list>
     <ion-item-sliding *ngFor="let todolist of ownerTodolist ; let i1 = index" [attr.data-index]="i1">
+<<<<<<< Updated upstream
       <ion-item>
+=======
+      <!-- TODO delete ligne en dessous !! <ion-item [href]="'/todoslist/' + todolist.id" routerDirection="forward"> -->
+      <ion-item [routerLink]="[todolist.id]" routerDirection="forward">
+>>>>>>> Stashed changes
         <ion-label>
           <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
         </ion-label>
