@@ -1,13 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {Todo} from '../model/todo';
 import {TodoslistService} from '../services/todoslist.service';
 import {Observable} from 'rxjs';
 import {Todolist} from "../model/todolist";
-import {AngularFireAuth} from "@angular/fire/auth";
 import {User} from "firebase";
 import {UserService} from "../services/user.service";
-import {AlertController, NavController} from "@ionic/angular";
-import {isEmpty} from "rxjs/operators";
+import {AlertController} from "@ionic/angular";
+
 
 @Component({
     selector: 'app-todoslist',
@@ -21,9 +19,13 @@ export class TodoslistPage implements OnInit {
     private allowWriteTodolist: Array<Todolist>;
     private allowReadWriteTodolist: Array<Todolist>;
     private currentUser: User;
+    private navigate : any;
 
 
-    constructor(private listService: TodoslistService, private userService: UserService, public alertCtrl: AlertController) {
+    constructor(private listService: TodoslistService,
+                private userService: UserService,
+                public alertCtrl: AlertController,
+                ) {
 
         // TODO Try to move inside ngoninit
         this.currentUser = userService.get();
@@ -34,6 +36,7 @@ export class TodoslistPage implements OnInit {
      * Get an observable and set/update the 3 todolists (owner, allowR, allowW)
      */
     ngOnInit(): void {
+        this.sideMenu();
 
         this.todolists$ = this.listService.get();
         this.todolists$.subscribe(todolists => {
@@ -51,16 +54,6 @@ export class TodoslistPage implements OnInit {
             console.log('this.allowReadWriteTodolist : ', JSON.stringify(this.allowReadWriteTodolist));
         })
     }
-
-    /**
-     TODO MUST BE DONE
-     delete(todo: Todo){
-    this.listService.delete(todo);
-  }
-     delete(todolist: Todolist){
-    this.listService.delete(todolist);
-  }
-     */
 
     async displayPromptAddTodolist() {
         let alert = await this.alertCtrl.create({
@@ -108,5 +101,33 @@ export class TodoslistPage implements OnInit {
 
     delete(todolist: Todolist){
         this.listService.deleteTodolist(todolist);
+    }
+
+// src : https://petercoding.com/ionic/2019/05/05/side-menu-in-ionic4/
+    sideMenu()
+    {
+        this.navigate =
+            [
+                {
+                    title : "My account",
+                    url   : "/account",
+                    icon  : "settings"
+                },
+                {
+                    title : "My todolists",
+                    url   : "/todoslist",
+                    icon  : "checkmark-circle-outline"
+                },
+                {
+                    title : "Shared with me",
+                    url   : "/sharedTodolist",
+                    icon  : "people"
+                },
+                {
+                    title : "Logout",
+                    url   : "/logout",
+                    icon  : "log-out"
+                },
+            ]
     }
 }
