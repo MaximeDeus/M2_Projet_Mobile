@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Todolist} from "../model/todolist";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute,  Router} from "@angular/router";
 import {TodoslistService} from "../services/todoslist.service";
 import {Todo} from "../model/todo";
 import {AlertController} from "@ionic/angular";
@@ -13,24 +13,22 @@ import {AlertController} from "@ionic/angular";
 export class TodolistPage implements OnInit {
 
   private id: string;
-  private todolist:Todolist;
+  private todolist:Todolist = {
+    allowRead: [],
+    allowWrite: [],
+    name: "",
+    owner: "",
+    todos: []}
 
-  constructor(private todolistService: TodoslistService , private route: ActivatedRoute,public alertCtrl: AlertController) {}
+  constructor(private router: Router, private todolistService: TodoslistService , private route: ActivatedRoute,public alertCtrl: AlertController) {}
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
-    // TODO this.todolist = this.todolistService.getTodolist(this.id);
-    this.todolistService.get().subscribe(todolists => {
-      let mergedTodolists: Array<Todolist> = [].concat.apply([], todolists);
-      // let unique = [...new Set(names)];
-      console.log ('todolists :' , JSON.stringify(todolists));
-      console.log ('mergedTodolists :' , JSON.stringify(mergedTodolists));
-      console.log ('this.todolist avant :' , JSON.stringify(this.todolist));
-      this.todolist = mergedTodolists.find(todolist => todolist.id === this.id);
-      console.log ('this.todolist après :' , JSON.stringify(this.todolist));
-    })
 
-    // this.todolist = {allowRead: undefined, allowWrite: undefined, id: "", name: "", owner: "", todos: undefined};
+    this.id = this.route.snapshot.paramMap.get('id');
+    this.todolistService.getTodolist(this.id).subscribe(todolist => {
+      console.log('value : ', JSON.stringify(todolist));
+      this.todolist = todolist;
+    })
   }
     delete(todo: Todo){
         this.todolistService.deleteTodo(todo,this.id);
