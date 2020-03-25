@@ -23,4 +23,14 @@
   <section>
     <ion-button (click)="displayPromptAddTodo()">New todo</ion-button>
   </section>
+
+  <ion-button [routerLink]="['/todoslist']" routerDirection="backward" >
+    OK
+  </ion-button>
+
+  <!--
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/todoslist" text="Accueil"></ion-back-button>
+  </ion-buttons>
+  -->
 </ion-content>
