@@ -6,6 +6,7 @@ import {Todolist} from "../model/todolist";
 import {Todo} from "../model/todo";
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "firebase";
+import * as firebase from "firebase";
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,7 @@ export class TodoslistService {
     private todolistsQueries: Array<AngularFirestoreCollection<Todolist>>;
     private todolists: Array<Observable<Array<Todolist>>>;
     private mergedTodolists: Observable<Array<Array<Todolist>>>;
-    private user:User
+    private user:User;
 
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
         this.user = afAuth.auth.currentUser; // TODO move inside if
@@ -102,10 +103,14 @@ export class TodoslistService {
     /**
      * return todolist based on id
      */
-    getTodolist(id:string): // TODO Observable<Todolist> {
-    void {
-        // TODO
-        return null;
+    getTodolist(id:string):Observable<Todolist> {
+
+        const query = this.db.collection<Todolist>('list',ref =>
+            ref.where(firebase.firestore.FieldPath.documentId(), '==', id));
+        const res = this.convertQuery(query).pipe(
+            map(todolists => todolists.find(todolist => todolist.id === id)));
+        return res;
+
     }
 
     /**
