@@ -31,6 +31,13 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorizedToLogin},
     loadChildren: () => import('./todolist/todolist.module').then( m => m.TodolistPageModule)
   },
+  {
+    path: 'logout',
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin},
+    loadChildren: () => import('./logout/logout.module').then( m => m.LogoutPageModule)
+  },
+
 ];
 
 @NgModule({
