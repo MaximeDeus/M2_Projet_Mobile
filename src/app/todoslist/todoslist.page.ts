@@ -29,7 +29,7 @@ export class TodoslistPage implements OnInit {
 
         // TODO Try to move inside ngoninit
         this.currentUser = userService.get();
-        console.log("Welcome back " + JSON.stringify(this.currentUser));
+        console.log("Current user : " + JSON.stringify(this.currentUser));
     }
 
     /**
@@ -109,11 +109,6 @@ export class TodoslistPage implements OnInit {
         this.navigate =
             [
                 {
-                    title : "My account",
-                    url   : "/account",
-                    icon  : "settings"
-                },
-                {
                     title : "My todolists",
                     url   : "/todoslist",
                     icon  : "checkmark-circle-outline"
@@ -122,6 +117,11 @@ export class TodoslistPage implements OnInit {
                     title : "Shared with me",
                     url   : "/sharedTodolist",
                     icon  : "people"
+                },
+                {
+                    title : "Settings",
+                    url   : "/settings",
+                    icon  : "settings"
                 },
                 {
                     title : "Logout",
