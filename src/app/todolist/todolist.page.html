@@ -1,8 +1,8 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>
-      {{todolist?.name}} <!--TODO try to fix issue (variable loaded too late) -->
-    </ion-title>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen>
@@ -23,8 +23,4 @@
   <section>
     <ion-button (click)="displayPromptAddTodo()">New todo</ion-button>
   </section>
-
-  <ion-button [routerLink]="['/todoslist']" routerDirection="backward" >
-    OK
-  </ion-button>
 </ion-content>
