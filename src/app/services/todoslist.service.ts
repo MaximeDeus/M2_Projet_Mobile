@@ -127,6 +127,9 @@ export class TodoslistService {
     addTodo(todo: Todo, todolistID: string) {
         return this.todolistsCollection.doc(todolistID).collection('item').add(todo);
     }
+    updateTodo(todo: Todo, todoID: string, todolistID: string) {
+        this.todolistsCollection.doc(todolistID).collection('item').doc(todoID).update(todo);
+    }
 
     deleteTodolist(todolist: Todolist) {
         return this.todolistsCollection.doc(todolist.id).delete();
