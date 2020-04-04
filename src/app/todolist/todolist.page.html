@@ -12,6 +12,7 @@
         <ion-label>
           <h2>{{ 'Todo n°' + (i+1) + ' : ' +  todo.title}}</h2>
         </ion-label>
+        <ion-checkbox [(ngModel)]="todo.isDone" (click)="updateTodo(todo,todo.id)"></ion-checkbox>
       </ion-item>
       <ion-item-options side="end">
       <ion-item-option color="danger" (click)="delete(todo)">

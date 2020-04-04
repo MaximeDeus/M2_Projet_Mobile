@@ -18,7 +18,7 @@ export class TodolistPage implements OnInit {
     allowWrite: [],
     name: "",
     owner: "",
-    todos: []}
+    todos : []}
 
   constructor(private router: Router, private todolistService: TodoslistService , private route: ActivatedRoute,public alertCtrl: AlertController) {}
 
@@ -73,5 +73,10 @@ export class TodolistPage implements OnInit {
           title: name
         }
     return todo;
+  }
+
+  updateTodo(todo: Todo, todoID: string) {
+    todo.isDone = !todo.isDone;
+    this.todolistService.updateTodo(todo,todoID,this.id);
   }
 }
