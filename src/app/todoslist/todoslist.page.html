@@ -1,26 +1,11 @@
-<ion-menu side="start" menuId="first" contentId="sideMenu">
-    <ion-header>
-        <ion-toolbar>
-            <ion-title>Menu</ion-title>
-        </ion-toolbar>
-    </ion-header>
-    <ion-content>
-        <ion-menu-toggle auto-hide="true">
-            <ion-item *ngFor="let pages of navigate" [routerLink]="pages.url" routerDirection="forward">
-                <ion-icon [name]="pages.icon" slot="start"></ion-icon>
-                {{pages.title}}
-            </ion-item>
-        </ion-menu-toggle>
-    </ion-content>
-    <ion-router-outlet id="sideMenu"></ion-router-outlet>
-</ion-menu>
-
 <ion-content color="primary" class="ion-padding">
-<ion-header>
+
+    <app-menu [idMenu]="'todoslist'"></app-menu>
+    <ion-header>
         <ion-buttons slot="start">
             <ion-menu-button color="light"></ion-menu-button>
         </ion-buttons>
-</ion-header>
+    </ion-header>
     <ion-grid>
         <ion-row color="primary" class="ion-justify-content-center">
             <ion-col class="ion-align-self-center" size-md="6" size-lg="5" size-xs="12">

@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { TodoslistPageRoutingModule } from './todoslist-routing.module';
 
 import { TodoslistPage } from './todoslist.page';
+import {MenuModule} from "../menu/menu.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TodoslistPageRoutingModule
+    TodoslistPageRoutingModule,
+      MenuModule
   ],
   declarations: [TodoslistPage]
 })
