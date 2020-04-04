@@ -8,7 +8,7 @@
 <ion-content fullscreen>
   <ion-list>
     <ion-item-sliding *ngFor="let todo of this.todolist.todos ; let i = index" [attr.data-index]="i">
-      <ion-item>
+      <ion-item [color]="todo.isDone?'success':'warning'">
         <ion-label>
           <h2>{{ 'Todo n°' + (i+1) + ' : ' +  todo.title}}</h2>
         </ion-label>
