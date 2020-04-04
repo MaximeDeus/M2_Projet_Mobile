@@ -1,0 +1,16 @@
+<ion-menu side="start" menuId="{{this.idMenu}}" contentId="sideMenu {{this.idMenu}}" (ionDidClose)="closeMenu()">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu {{this.idMenu}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-menu-toggle auto-hide="true">
+      <ion-item *ngFor="let pages of navigate" [routerLink]="pages.url" routerDirection="forward" (click)="closeMenu()">
+        <ion-icon [name]="pages.icon" slot="start"></ion-icon>
+        {{pages.title}}
+      </ion-item>
+    </ion-menu-toggle>
+  </ion-content>
+  <ion-router-outlet id="sideMenu {{this.idMenu}}"></ion-router-outlet>
+</ion-menu>
