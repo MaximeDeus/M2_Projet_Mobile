@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {UserService} from "../services/user.service";
-import {Router} from "@angular/router";
 import {User} from "firebase";
 import {AlertController, ToastController} from "@ionic/angular";
 
@@ -9,7 +8,7 @@ import {AlertController, ToastController} from "@ionic/angular";
     templateUrl: './settings.page.html',
     styleUrls: ['./settings.page.scss'],
 })
-export class SettingsPage {
+export class SettingsPage{
     user: User;
     displayName: string | null;
     email: string | null;
@@ -17,10 +16,8 @@ export class SettingsPage {
     newPassword: string | null;
     confirmNewPassword: string | null;
     error: Error = null;
-
     constructor(
         private userService: UserService,
-        private router: Router,
         public alertCtrl: AlertController,
         public toastController: ToastController)
     {

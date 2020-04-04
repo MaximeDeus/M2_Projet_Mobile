@@ -1,11 +1,12 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
 <ion-content color="primary" class="ion-padding">
+
+  <app-menu [idMenu]="'settings'"></app-menu>
+    <ion-header>
+    <ion-buttons slot="start">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+  </ion-header>
+
   <form #form="ngForm" (ngSubmit)="checkUserInput()">
     <ion-grid>
       <ion-row color="primary" class="ion-justify-content-center">
@@ -17,19 +18,19 @@
           <div class="ion-padding">
             <!-- TODO ajouter prise de photo + afficher photo haut droite (si aucune, afficher image basique) -->
 
-            <ion-item>
+            <ion-item class="ion-item-settings">
               <ion-label color="light" position="floating"><b>Username</b></ion-label>
               <ion-input name="displayName" type="text" placeholder="John Doe" minlength="3" maxlength="10" [(ngModel)]="displayName" required></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item class="ion-item-settings">
               <ion-label color="light" position="floating"><b>Email</b></ion-label>
               <ion-input name="email" type="text" placeholder="johndoe@email.com" [(ngModel)]="email" required></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item class="ion-item-settings">
               <ion-label color="light" position="floating"><b>Password</b></ion-label>
               <ion-input name="password" type="password" placeholder="********" minlength="6" [(ngModel)]="newPassword"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item class="ion-item-settings">
               <ion-label color="light" position="floating"><b>Confirm password</b></ion-label>
               <ion-input name="confirmPassword" type="password" placeholder="********" [(ngModel)]="confirmNewPassword"></ion-input>
             </ion-item>
