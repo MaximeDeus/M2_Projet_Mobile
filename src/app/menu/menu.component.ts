@@ -9,7 +9,7 @@ import {MenuController} from "@ionic/angular";
 export class MenuComponent implements OnInit {
   private navigate : any;
   @Input() idMenu : string;
-  
+
   constructor(private menu: MenuController) { }
 
   ngOnInit() {
