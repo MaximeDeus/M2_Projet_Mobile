@@ -35,6 +35,7 @@ export class TodoslistPage implements OnInit {
      */
     ngOnInit(): void {
 
+        this.ownerTodolist = this.listService.getLatestOwnerTodolist();
         this.todolists$ = this.listService.get();
         this.todolists$.subscribe(todolists => {
             this.ownerTodolist = todolists[0];
