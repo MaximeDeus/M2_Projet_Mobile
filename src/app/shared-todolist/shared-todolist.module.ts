@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { SharedTodolistPageRoutingModule } from './shared-todolist-routing.module';
 
 import { SharedTodolistPage } from './shared-todolist.page';
+import {MenuModule} from "../menu/menu.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    SharedTodolistPageRoutingModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        SharedTodolistPageRoutingModule,
+        MenuModule
+    ],
   declarations: [SharedTodolistPage]
 })
 export class SharedTodolistPageModule {}

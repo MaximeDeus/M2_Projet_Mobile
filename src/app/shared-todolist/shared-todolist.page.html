@@ -1,9 +1,48 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>sharedTodolist</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content color="primary" class="ion-padding">
 
-<ion-content>
+    <app-menu [idMenu]="'shared-todolist'"></app-menu>
+    <ion-header>
+        <ion-buttons slot="start">
+            <ion-menu-button color="light"></ion-menu-button>
+        </ion-buttons>
+    </ion-header>
+    <ion-grid>
+        <ion-row color="primary" class="ion-justify-content-center">
+            <ion-col class="ion-align-self-center" size-md="6" size-lg="5" size-xs="12">
+                <div class="ion-text-center">
+                    <h3>Hello {{this.currentUser.displayName}} :-)</h3>
+                </div>
+                <div class="ion-padding">
+                    <ion-item-sliding *ngFor="let todolist of allowReadWriteTodolist ; let i1 = index" [attr.data-index]="i1">
+                        <ion-item [color]="isCompleted(todolist)?'success':'warning'" class="ion-item-todolist" [routerLink]="[todolist.id]" routerDirection="forward">
+                            <ion-label>
+                                <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
+                            </ion-label>
+                            <span> {{countTodoDone(todolist)}}/{{todolist.todos.length}} todos</span>
+                        </ion-item>
+                        <ion-item-options side="end">
+                            <ion-item-option color="danger" (click)="delete(todolist)">
+                                <ion-icon slot="top" name="trash"></ion-icon>
+                            </ion-item-option>
+                        </ion-item-options>
+                    </ion-item-sliding>
+                </div>
+                <div class="ion-padding">
+                    <ion-button size="large" expand="block"(click)="displayPromptAddTodolist()">New todolist</ion-button>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <!--
+     <H3>My shared lists</H3>
+     <ion-item-sliding *ngFor="let todolist of allowReadWriteTodolist ; let i1 = index" [attr.data-index]="i1">
+       <ion-item [href]="'/todoslist/' + todolist.id" routerDirection="forward">
+         <ion-label>
+           <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
+         </ion-label>
+         <span> {{todolist.todos.length}} todos</span>
+       </ion-item>
+     </ion-item-sliding>
+     -->
 
 </ion-content>
