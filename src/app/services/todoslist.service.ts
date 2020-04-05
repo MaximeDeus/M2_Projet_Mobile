@@ -20,6 +20,8 @@ export class TodoslistService {
     private todolists: Array<Observable<Array<Todolist>>>;
     private mergedTodolists: Observable<Array<Array<Todolist>>>;
     private user:User;
+    private initLatestReadWriteTodolist: Array<Todolist>;
+    private initLatestOwnerTodolist: Array<Todolist>;
 
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
         this.user = afAuth.auth.currentUser; // TODO move inside if
@@ -64,6 +66,21 @@ export class TodoslistService {
          * (owner arr., allowR arr., allowW arr.)
          */
         this.mergedTodolists = combineLatest(this.todolists);
+        /**
+         * Used for sharing datas between Todoslist and shared todolist
+         * (snapshot not triggered when using redirection)
+         */
+        this.mergedTodolists.subscribe(todolists => {
+            this.initLatestOwnerTodolist = todolists[0];
+
+            const allowReadTodolist = todolists[1];
+            const allowWriteTodolist = todolists[2];
+
+            // Concat and Merge read and write array and then remove duplicated elements (if both read/write)
+            this.initLatestReadWriteTodolist = Array.from(allowReadTodolist
+                .concat(allowReadTodolist, allowWriteTodolist)
+                .reduce((m, t) => m.set(t.name, t), new Map()).values());
+    });
     }
 
     /**
@@ -118,6 +135,20 @@ export class TodoslistService {
      */
     get(): Observable<Array<Array<Todolist>>> {
         return this.mergedTodolists;
+    }
+
+    /**
+     * Used for getting data when component is loaded, will be overrided once observable triggered
+     */
+    getLatestOwnerTodolist(): Array<Todolist> {
+        return this.initLatestOwnerTodolist;
+    }
+
+    /**
+     * same here for shared list
+     */
+    getLatestReadWriteTodolist(): Array<Todolist> {
+        return this.initLatestReadWriteTodolist;
     }
 
     addTodolist(todolist: Todolist) {
