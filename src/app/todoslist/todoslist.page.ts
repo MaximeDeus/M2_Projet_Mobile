@@ -103,4 +103,8 @@ export class TodoslistPage implements OnInit {
     isCompleted(todolist: Todolist) {
         return todolist.todos.every(todo => todo.isDone);
     }
+
+    countTodoDone(todolist: Todolist){
+        return todolist.todos.filter(todo => todo.isDone).length;
+    }
 }
