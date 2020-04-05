@@ -44,7 +44,7 @@ const routes: Routes = [
         loadChildren: () => import('./settings/settings.module').then(m => m.SettingsPageModule)
     },
     {
-        path: 'shared-todolist',
+        path: 'sharedTodolist',
         canActivate: [AngularFireAuthGuard],
         data: {authGuardPipe: redirectUnauthorizedToLogin},
         loadChildren: () => import('./shared-todolist/shared-todolist.module').then(m => m.SharedTodolistPageModule)
