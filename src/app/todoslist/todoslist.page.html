@@ -14,7 +14,7 @@
                 </div>
                 <div class="ion-padding">
                     <ion-item-sliding *ngFor="let todolist of ownerTodolist ; let i1 = index" [attr.data-index]="i1">
-                        <ion-item class="ion-item-todolist" [routerLink]="[todolist.id]" routerDirection="forward">
+                        <ion-item [color]="isCompleted(todolist)?'success':'warning'" class="ion-item-todolist" [routerLink]="[todolist.id]" routerDirection="forward">
                             <ion-label>
                                 <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
                             </ion-label>

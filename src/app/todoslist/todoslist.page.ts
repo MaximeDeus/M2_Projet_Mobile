@@ -99,4 +99,8 @@ export class TodoslistPage implements OnInit {
     delete(todolist: Todolist){
         this.listService.deleteTodolist(todolist);
     }
+
+    isCompleted(todolist: Todolist) {
+        return todolist.todos.every(todo => todo.isDone);
+    }
 }
