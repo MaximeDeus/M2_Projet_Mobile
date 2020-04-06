@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
-import {combineLatest,  Observable, pipe, ObservedValueOf} from 'rxjs';
+import {combineLatest, Observable, Subscription} from 'rxjs';
 import {flatMap, map} from 'rxjs/operators';
 import {Todolist} from "../model/todolist";
 import {Todo} from "../model/todo";
-import {toTitleCase} from "codelyzer/util/utils";
 import {AngularFireAuth} from '@angular/fire/auth';
-import {auth} from 'firebase/app';
+import {User} from "firebase";
+import * as firebase from "firebase";
 
 @Injectable({
     providedIn: 'root'
@@ -17,79 +17,28 @@ export class TodoslistService {
     private allowReadQuery: AngularFirestoreCollection<Todolist>;
     private allowWriteQuery: AngularFirestoreCollection<Todolist>;
     private todolistsQueries: Array<AngularFirestoreCollection<Todolist>>;
-    private todolists: Array<Observable<Array<Todolist>>>; // TODO peut etre supprimer ou ajouter array
-    private mergedTodolists : Observable<Array<Array<Todolist>>>; // TODO Observable<Array<Todolist>>;
-    private items: Array<Todo>;
-    private allowRead: Array<Todo>;
-    private allowWrite: Array<Todo>;
+    private todolists: Array<Observable<Array<Todolist>>>;
+    private mergedTodolists: Observable<Array<Array<Todolist>>>;
+    private user:User;
+    private initLatestReadWriteTodolist: Array<Todolist>;
+    private initLatestOwnerTodolist: Array<Todolist>;
+    private refSubscriptionMergedTodolist: Subscription;
+    private refSubscriptionAllSnapshots: any;
 
+    // TODO URGENT FAIRE DIRECT !! DEPLACER CODE CONSTRUCTOR DANS UNE METHODE INIT OU REFRESH
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
-        const user = afAuth.auth.currentUser;
-        console.log('user : ' + user);
-        console.log('user.displayName' + user.displayName);
-        console.log('user.email' + user.email);
-        console.log('user.uid' + user.uid);
-        console.log('user.photoURL' + user.photoURL);
-
-        /** TODO
-         if (user) {
-            // User is signed in.
-        } else {
-            // No user is signed in.
-        }
-         */
-
-
-        /**
-         this.todolists = combineLatest(ownerRef.valueChanges(), allowReadRef.valueChanges(),allowWriteRef.valueChanges())
-
-         );.pipe(
-         switchMap(filteredList => {
-            const [ownerLists, allowReadLists , allowWriteLists] = filteredList;
-            const combined = ownerLists.concat(allowReadLists,allowWriteLists);
-            console.log('filtered : ' + JSON.stringify(filteredList));
-            console.log('ownerLists : ' + JSON.stringify(ownerLists));
-            console.log('allowReadLists : ' + JSON.stringify(allowReadLists));
-            console.log('allowWriteLists : ' + JSON.stringify(allowWriteLists));
-            console.log('combined : ' + JSON.stringify(combined));
-            return of(combined);
-        })
-         this.todolists.subscribe(value =>
-         console.log('value : ' + JSON.stringify(value))
-         )
-         */
-        /**
-         // return all list (Array of Observable Todolist containing Array of todo)
-         // TODO implements shared lists
-         // Load collection containing all todolist document
-
-         this.todolists = this.todolistsCollection.snapshotChanges().pipe(
-         map(this.convertSnapshots), // data of each todolist
-         map((allTodolistDatas:Todolist[]) => allTodolistDatas.
-         map(allTodolistDatas => this.todolistsCollection.doc(allTodolistDatas.id).collection<Todo>('item').snapshotChanges().pipe( // rename parameter to todolistDatas ?
-         map(this.convertSnapshots),
-         map((allTodosDatas:Array<Todo>) => Object.assign(allTodolistDatas, {['todos']: allTodosDatas})
-         )
-         ))
-         ),
-         flatMap(combined => combineLatest(combined))
-         );
-         */
-        /**
-         this.todolistsCollection = [ownerRef,allowReadRef,allowWriteRef];
-         this.todolists = combineLatest(this.todolistsCollection.map(query => this.convertQuery(query)));
-         */
-
-        this.todolistsCollection = db.collection<Todolist>('list', ref =>
-            ref.where('owner', '==', user.email)
-                .where("allowRead", "array-contains", user.uid));
+        try {
+        this.user = afAuth.auth.currentUser;
+        console.log('user.uid =', this.user.uid);
+        // Used to communicate with DB (for CRUD operations (good practice ?)
+        this.todolistsCollection = db.collection<Todolist>('list');
 
         this.ownerQuery = db.collection<Todolist>('list', ref =>
-            ref.where('owner', '==', user.email));
+            ref.where('owner', '==', this.user.uid));
         this.allowReadQuery = db.collection<Todolist>('list', ref =>
-            ref.where("allowRead", "array-contains", user.uid));
+            ref.where("allowRead", "array-contains", this.user.uid));
         this.allowWriteQuery = db.collection<Todolist>('list', ref =>
-            ref.where("allowWrite", "array-contains", user.uid));
+            ref.where("allowWrite", "array-contains", this.user.uid));
 
         this.todolistsQueries = [
             this.ownerQuery,
@@ -97,75 +46,56 @@ export class TodoslistService {
             this.allowWriteQuery
         ];
 
-        this.todolists = this.todolistsQueries.map((query => { // TODO add combine latest
-            console.log('traitement de la query : ' + query);
+
+        /**
+         * Each query is used to Create an observable containing an
+         * array of todolist Model
+         * (todolist data are parsed using convertSnapshot inside convertQuery)
+         *
+         */
+        this.todolists = this.todolistsQueries.map((query => {
             const res = this.convertQuery(query);
             return res;
         }));
-
-        this.todolists.map((todolist) => {
-            todolist.subscribe(todolist => {
-                console.log('todolist : ', JSON.stringify(todolist));
-            })
-        });
-
-
-        const firstTodolist = this.todolists[0];
-        const secondTodolist = this.todolists[1];
-        const thirdTodolist = this.todolists[2];
-
-        firstTodolist.subscribe(todolist => {
-            console.log('firstTodolist (owner): ', JSON.stringify(todolist));
-        });
-
-        secondTodolist.subscribe(todolist => {
-            console.log('secondTodolist (read): ', JSON.stringify(todolist));
-        });
-
-        thirdTodolist.subscribe(todolist => {
-            console.log('thirdTodolist (write): ', JSON.stringify(todolist));
-        });
-
-        this.mergedTodolists = combineLatest(this.todolists);
-        this.mergedTodolists.subscribe(value => console.log('mergetodolist: ' + JSON.stringify(value)));
-
-
         /**
-
-         this.mergedTodolists = combineLatest(firstTodolist, secondTodolist,thirdTodolist)
-         );.pipe(
-         switchMap(filteredList => {
-                const [ownerLists, allowReadLists , allowWriteLists] = filteredList;
-                const combined = ownerLists.concat(allowReadLists,allowWriteLists);
-                console.log('filtered : ' + JSON.stringify(filteredList));
-                console.log('ownerLists : ' + JSON.stringify(ownerLists));
-                console.log('allowReadLists : ' + JSON.stringify(allowReadLists));
-                console.log('allowWriteLists : ' + JSON.stringify(allowWriteLists));
-                console.log('combined : ' + JSON.stringify(combined));
-                return of(combined);
-            })
-
-
-
-         this.mergedTodolists.subscribe(todolist => {
-console.log('todolist : ', JSON.stringify(todolist));
-
-})
-         */        /**
-         let combined = emptyList.concat(filteredList);
-         console.log('filtered : ' + JSON.stringify(filteredList));
-         console.log('ownerLists : ' + JSON.stringify(ownerLists));
-         console.log('allowReadLists : ' + JSON.stringify(allowReadLists));
-         console.log('allowWriteLists : ' + JSON.stringify(allowWriteLists));
-         console.log('combined : ' + JSON.stringify(combined));
-         return of(combined);
-         );
+         * Merge all observables from todolists
+         * Contains an observable of an array containing the 3 arrays todolists
+         * (owner arr., allowR arr., allowW arr.)
          */
+        this.mergedTodolists = combineLatest(this.todolists);
+        /**
+         * Used for sharing datas between Todoslist and shared todolist
+         * (snapshot not triggered when using redirection)
+         */
+        console.log("BEFORE MERGED TODOLIST");
+        this.refSubscriptionMergedTodolist = this.mergedTodolists.subscribe(todolists => {
+            // this.mergedTodolists.subscribe(todolists => {
+            console.log('mergedtodolist : this.initLatestOwnerTodolist = ', this.initLatestOwnerTodolist);
+            this.initLatestOwnerTodolist = todolists[0];
+
+            const allowReadTodolist = todolists[1];
+            const allowWriteTodolist = todolists[2];
+
+            // Concat and Merge read and write array and then remove duplicated elements (if both read/write)
+            this.initLatestReadWriteTodolist = Array.from(allowReadTodolist
+                .concat(allowReadTodolist, allowWriteTodolist)
+                .reduce((m, t) => m.set(t.name, t), new Map()).values());
+    });
+    }
+    catch (e) {
+        console.log('error : ' , e.message());
+    }
     }
 
+    /**
+     * return an observable of todolist
+     * data are parsed using convertsnapshot
+     *
+     * @param query : firestoreCollection reference
+     */
     convertQuery(query: AngularFirestoreCollection<Todolist>): Observable<Array<Todolist>> {
-
-        return query.snapshotChanges().pipe(
+        // this.refSubscriptionAllSnapshots.push(query.snapshotChanges());
+        let res: Observable<Array<Todolist>> = query.snapshotChanges().pipe(
             map(this.convertSnapshots), // data of each todolist
             map((allTodolistDatas: Todolist[]) => allTodolistDatas.map(allTodolistDatas => query.doc(allTodolistDatas.id).collection<Todo>('item').snapshotChanges().pipe( // rename parameter to todolistDatas ?
                 map(this.convertSnapshots),
@@ -175,10 +105,17 @@ console.log('todolist : ', JSON.stringify(todolist));
             ),
             flatMap(combined => combineLatest(combined))
         );
+        return res;
     }
 
+    /**
+     * a generic method used to parse generics datas from angularFSC snapshot
+     *
+     * @param snap : datas from angular FirestoreCollection
+     */
     convertSnapshots<T>(snaps) {
         return <T[]>snaps.map(snap => {
+            console.log ("conversnapshot, id " , snap.payload.doc.data());
             return {
                 id: snap.payload.doc.id,
                 ...snap.payload.doc.data()
@@ -186,8 +123,46 @@ console.log('todolist : ', JSON.stringify(todolist));
         });
     }
 
+    /**
+     * return todolist based on id
+     */
+    getTodolist(id:string):Observable<Todolist> {
+
+        const query = this.db.collection<Todolist>('list',ref =>
+            ref.where(firebase.firestore.FieldPath.documentId(), '==', id));
+        const res = this.convertQuery(query).pipe(
+            map(todolists => todolists.find(todolist => todolist.id === id)));
+        return res;
+
+    }
+
+    /**
+     * return observable of the 3 arrays (owner, allowR, allowR)
+     */
     get(): Observable<Array<Array<Todolist>>> {
+        console.log ("get mergetodolist : ", this.mergedTodolists);
         return this.mergedTodolists;
+    }
+
+    /**
+     * used for unsubscribe when logged out
+     */
+    getRefSubscriptionMergedTodolist(): Subscription {
+        return this.refSubscriptionMergedTodolist;
+    }
+
+    /**
+     * Used for getting data when component is loaded, will be overrided once observable triggered
+     */
+    getLatestOwnerTodolist(): Array<Todolist> {
+        return this.initLatestOwnerTodolist;
+    }
+
+    /**
+     * same here for shared list
+     */
+    getLatestReadWriteTodolist(): Array<Todolist> {
+        return this.initLatestReadWriteTodolist;
     }
 
     addTodolist(todolist: Todolist) {
@@ -196,6 +171,9 @@ console.log('todolist : ', JSON.stringify(todolist));
 
     addTodo(todo: Todo, todolistID: string) {
         return this.todolistsCollection.doc(todolistID).collection('item').add(todo);
+    }
+    updateTodo(todo: Todo, todoID: string, todolistID: string) {
+        this.todolistsCollection.doc(todolistID).collection('item').doc(todoID).update(todo);
     }
 
     deleteTodolist(todolist: Todolist) {

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
+import {UserService} from "../services/user.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-auth',
@@ -10,17 +12,26 @@ import { auth } from 'firebase/app';
 export class AuthPage {
   email: string = null;
   password:string = null;
+  error:Error = null;
 
 
-  constructor(public afAuth: AngularFireAuth) { }
+  constructor(private userService: UserService,private router:Router,) { }
   login() {
-    console.log(`email : ${this.email} \n password : ${this.password} `);
-    this.afAuth.auth.signInWithEmailAndPassword(this.email,this.password).then((res)=> console.log(res));
-    // this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider());
+    this.userService.login(this.email,this.password).then(() => {
+        // redirect if success
+        this.error = null;
+        this.router.navigate(['']);
+    }).catch(err => { // Display message if any issue during authentication
+      this.error = err;
+      if (this.error.message === 'There is no user record corresponding to this identifier. The user may have been deleted.') {
+        this.error.message = 'Invalid credentials. Please try again.'
+      }
+      console.log ("err: ", JSON.stringify(err));
+    });
   }
-  // TODO move this method
+  // TODO remove logout
   logout() {
-    this.afAuth.auth.signOut();
+    this.userService.logout();
   }
 
 }

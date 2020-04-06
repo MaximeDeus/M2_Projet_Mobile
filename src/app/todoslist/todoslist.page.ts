@@ -1,87 +1,45 @@
-import { Component, OnInit } from '@angular/core';
-import { Todo } from '../model/todo';
-import { TodoslistService } from '../services/todoslist.service';
-import { Observable } from 'rxjs';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {TodoslistService} from '../services/todoslist.service';
+import {Observable, Subscription} from 'rxjs';
 import {Todolist} from "../model/todolist";
-<<<<<<< Updated upstream
-=======
-import {AngularFireAuth} from "@angular/fire/auth";
 import {User} from "firebase";
 import {UserService} from "../services/user.service";
-import {AlertController, MenuController, NavController} from "@ionic/angular";
-import {isEmpty} from "rxjs/operators";
-import {SplashScreen} from "@ionic-native/splash-screen/ngx";
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+import {AlertController} from "@ionic/angular";
+
 
 @Component({
-  selector: 'app-todoslist',
-  templateUrl: './todoslist.page.html',
-  styleUrls: ['./todoslist.page.scss'],
+    selector: 'app-todoslist',
+    templateUrl: './todoslist.page.html',
+    styleUrls: ['./todoslist.page.scss'],
 })
-export class TodoslistPage implements OnInit {
-<<<<<<< Updated upstream
-  private todolists$: Observable<Array<Array<Todolist>>>;
-  private ownerTodolist:Array<Todolist>;
-  private allowReadTodolist:Array<Todolist>;
-  private allowWriteTodolist:Array<Todolist>;
-
-
-  constructor(private listService: TodoslistService) {}
-
-  ngOnInit(): void {
-    this.todolists$ = this.listService.get();
-    this.todolists$.subscribe(todolists => {
-    // console.log('this.todolists$ inside = ' , JSON.stringify(this.todolists$));
-    this.ownerTodolist = todolists[0];
-      // console.log('this.ownertodolist inside = ' , JSON.stringify(this.ownerTodolist));
-      // console.log('value = ' , JSON.stringify(value));
-    this.allowReadTodolist = todolists[1];
-    this.allowWriteTodolist = todolists[2];
-        // Display data in html file
-  })
-    console.log ('this.todolists$ outside = ' , this.todolists$);
-  }  
-/**
-  TODO MUST BE DONE
-  delete(todo: Todo){
-=======
+export class TodoslistPage implements OnInit, OnDestroy {
     private todolists$: Observable<Array<Array<Todolist>>>;
     private ownerTodolist: Array<Todolist>;
     private allowReadTodolist: Array<Todolist>;
     private allowWriteTodolist: Array<Todolist>;
     private allowReadWriteTodolist: Array<Todolist>;
     private currentUser: User;
-    private navigate : any;
+    private subscriptionTodolists$: Subscription;
 
 
     constructor(private listService: TodoslistService,
                 private userService: UserService,
                 public alertCtrl: AlertController,
-                private menu: MenuController,
-                private splashScreen: SplashScreen,
-                private statusBar: StatusBar
-                ) {
-
-        // TODO Try to move inside ngoninit
-        this.currentUser = userService.get();
-        console.log("Welcome back " + JSON.stringify(this.currentUser));
-    }
+                ) {}
 
     /**
      * Get an observable and set/update the 3 todolists (owner, allowR, allowW)
      */
     ngOnInit(): void {
-       this.openFirst();
-        this.sideMenu();
-       //  this.statusBar.styleDefault();
-        // this.splashScreen.hide();
-
+        console.log("NGONINIT");
+        this.currentUser = this.userService.get();
+        console.log("Current user : " + JSON.stringify(this.currentUser));
+        this.ownerTodolist = this.listService.getLatestOwnerTodolist();
+        console.log('owner todolist : ' , this.ownerTodolist);
         this.todolists$ = this.listService.get();
-        this.todolists$.subscribe(todolists => {
+        console.log ('observable todolist : ' , this.todolists$);
+        this.subscriptionTodolists$ = this.todolists$.subscribe(todolists => {
+            console.log('SUBSCRIBE');
             this.ownerTodolist = todolists[0];
             this.allowReadTodolist = todolists[1];
             this.allowWriteTodolist = todolists[2];
@@ -97,19 +55,43 @@ export class TodoslistPage implements OnInit {
         })
     }
 
-    /**
-     TODO MUST BE DONE
-     delete(todo: Todo){
->>>>>>> Stashed changes
-    this.listService.delete(todo);
-  }
- delete(todolist: Todolist){
-    this.listService.delete(todolist);
-  }
-<<<<<<< Updated upstream
+    ngOnDestroy(): void {
+        console.log("NG ON DESTROY");
+        console.log("closed : " , this.subscriptionTodolists$.closed);
+        this.subscriptionTodolists$.unsubscribe();
+    }
+/**
+    ionViewWillEnter(){
+        console.log("IONVIEWWILLENTER");
+        this.currentUser = this.userService.get();
+        console.log("Current user : " + JSON.stringify(this.currentUser));
+        this.ownerTodolist = this.listService.getLatestOwnerTodolist();
+        console.log('owner todolist : ' , this.ownerTodolist);
+        this.todolists$ = this.listService.get();
+        console.log ('observable todolist : ' , this.todolists$);
+        this.subscription = this.todolists$.subscribe(todolists => {
+            console.log('SUBSCRIBE');
+            this.ownerTodolist = todolists[0];
+            this.allowReadTodolist = todolists[1];
+            this.allowWriteTodolist = todolists[2];
+
+            // Merge read and write array and then remove duplicated elements (if both read/write)
+            this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
+                .concat(this.allowReadTodolist, this.allowWriteTodolist)
+                .reduce((m, t) => m.set(t.name, t), new Map()).values());
+            console.log('this.ownerTodolist : ', JSON.stringify(this.ownerTodolist));
+            console.log('allowReadTodolist : ', JSON.stringify(this.allowReadTodolist));
+            console.log('this.allowWriteTodolist : ', JSON.stringify(this.allowWriteTodolist));
+            console.log('this.allowReadWriteTodolist : ', JSON.stringify(this.allowReadWriteTodolist));
+        })
+    }
  */
-=======
-     */
+/**
+    ionViewWillLeave(){
+        console.log("IONVIEWWILLLEAVE");
+        this.subscription.unsubscribe();
+    }
+ */
 
     async displayPromptAddTodolist() {
         let alert = await this.alertCtrl.create({
@@ -159,34 +141,11 @@ export class TodoslistPage implements OnInit {
         this.listService.deleteTodolist(todolist);
     }
 
-    openFirst() {
-        this.menu.enable(true, 'first');
-        // this.menu.open('first');
+    isCompleted(todolist: Todolist) {
+        return todolist.todos.every(todo => todo.isDone);
     }
-// src : https://petercoding.com/ionic/2019/05/05/side-menu-in-ionic4/
-    sideMenu()
-    {
-        this.navigate =
-            [
-                {
-                    title : "Home",
-                    url   : "/home",
-                    icon  : "home"
-                },
-                {
-                    title : "Chat",
-                    url   : "/chat",
-                    icon  : "chatboxes"
-                },
-                {
-                    title : "Contacts",
-                    url   : "/contacts",
-                    icon  : "contacts"
-                },
-            ]
+
+    countTodoDone(todolist: Todolist){
+        return todolist.todos.filter(todo => todo.isDone).length;
     }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 }
