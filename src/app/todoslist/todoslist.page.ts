@@ -5,7 +5,7 @@ import {Todolist} from "../model/todolist";
 import {User} from "firebase";
 import {UserService} from "../services/user.service";
 import {AlertController} from "@ionic/angular";
-import {UserDB} from "../model/user";
+import {UserDB} from "../model/userDB";
 
 
 @Component({
@@ -63,8 +63,6 @@ export class TodoslistPage implements OnInit, OnDestroy {
             console.log('write  todolist: ', this.allowWriteTodolist);
             this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
             console.log('write todolist filtered: ', this.allowWriteTodolist);
-
-
 
             // Merge read and write array and then remove duplicated elements (if both read/write)
             this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
@@ -172,7 +170,9 @@ export class TodoslistPage implements OnInit, OnDestroy {
         return todolist.todos.filter(todo => todo.isDone).length;
     }
 
-    buildInput(user: UserDB, todolist:Todolist) {
+    buildInputRead(user: UserDB, todolist:Todolist) {
+        // Can't share with ourself
+        if (user.uid !== this.currentUser.uid){
         const isSharedReadWithUser = todolist.allowRead.filter(uid => uid === user.uid).length > 0;
         return {
             name:  user.name,
@@ -181,14 +181,16 @@ export class TodoslistPage implements OnInit, OnDestroy {
             value: user.uid,
             checked: isSharedReadWithUser
         }
+        }
+        // will be filtered
     }
 
-    async displayPromptShareTodolist(todolist:Todolist) {
-        console.log('hello world');
-        const input:any = this.users.map((user) => this.buildInput(user,todolist));
-
+    async displayPromptAllowReadTodolist(todolist:Todolist) {
+        console.log('hello world prompt read todolist');
+        const input:any = this.users.map((user) => this.buildInputRead(user,todolist))
+            .filter(user => user !== undefined);
         const alert = await this.alertCtrl.create({
-            header: 'Share with',
+            header: 'Share read with',
             inputs: input,
             buttons: [
                 {
@@ -202,6 +204,7 @@ export class TodoslistPage implements OnInit, OnDestroy {
                     text: 'Ok',
                     handler: () => {
                         console.log('Confirm Ok');
+                        // TODO update todolist allow read array
                     }
                 }
             ]
