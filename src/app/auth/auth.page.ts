@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
 import {UserService} from "../services/user.service";
 import {Router} from "@angular/router";
 
@@ -26,11 +24,6 @@ export class AuthPage {
       if (this.error.message === 'There is no user record corresponding to this identifier. The user may have been deleted.') {
         this.error.message = 'Invalid credentials. Please try again.'
       }
-      console.log ("err: ", JSON.stringify(err));
     });
   }
-  logout() {
-    this.userService.logout();
-  }
-
 }
