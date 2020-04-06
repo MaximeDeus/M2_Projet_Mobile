@@ -19,7 +19,7 @@ export class TodoslistService {
     private todolistsQueries: Array<AngularFirestoreCollection<Todolist>>;
     private todolists: Array<Observable<Array<Todolist>>>;
     private mergedTodolists: Observable<Array<Array<Todolist>>>;
-    private user:User;
+    private user: User;
     private initLatestReadWriteTodolist: Array<Todolist>;
     private initLatestOwnerTodolist: Array<Todolist>;
     private refSubscriptionMergedTodolist: Subscription;
@@ -27,64 +27,65 @@ export class TodoslistService {
 
     // TODO important ! try to move constructor content inside init method called from page component (ex: todoslist)
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
+    }
+
+    init() {
         try {
-        this.user = afAuth.auth.currentUser;
-        console.log('user.uid =', this.user.uid);
-        // Used to communicate with DB (for CRUD operations (good practice ?)
-        this.todolistsCollection = db.collection<Todolist>('list');
+            this.user = this.afAuth.auth.currentUser;
+            // Used to communicate with DB (for CRUD operations (good practice ?)
+            this.todolistsCollection = this.db.collection<Todolist>('list');
 
-        this.ownerQuery = db.collection<Todolist>('list', ref =>
-            ref.where('owner', '==', this.user.uid));
-        this.allowReadQuery = db.collection<Todolist>('list', ref =>
-            ref.where("allowRead", "array-contains", this.user.uid));
-        this.allowWriteQuery = db.collection<Todolist>('list', ref =>
-            ref.where("allowWrite", "array-contains", this.user.uid));
+            this.ownerQuery = this.db.collection<Todolist>('list', ref =>
+                ref.where('owner', '==', this.user.uid));
+            this.allowReadQuery = this.db.collection<Todolist>('list', ref =>
+                ref.where("allowRead", "array-contains", this.user.uid));
+            this.allowWriteQuery = this.db.collection<Todolist>('list', ref =>
+                ref.where("allowWrite", "array-contains", this.user.uid));
 
-        this.todolistsQueries = [
-            this.ownerQuery,
-            this.allowReadQuery,
-            this.allowWriteQuery
-        ];
+            this.todolistsQueries = [
+                this.ownerQuery,
+                this.allowReadQuery,
+                this.allowWriteQuery
+            ];
 
 
-        /**
-         * Each query is used to Create an observable containing an
-         * array of todolist Model
-         * (todolist data are parsed using convertSnapshot inside convertQuery)
-         *
-         */
-        this.todolists = this.todolistsQueries.map((query => {
-            const res = this.convertQuery(query);
-            return res;
-        }));
-        /**
-         * Merge all observables from todolists
-         * Contains an observable of an array containing the 3 arrays todolists
-         * (owner arr., allowR arr., allowW arr.)
-         */
-        this.mergedTodolists = combineLatest(this.todolists);
-        /**
-         * Used for sharing datas between Todoslist and shared todolist
-         * (snapshot not triggered when using redirection)
-         */
-        console.log("BEFORE MERGED TODOLIST");
-        this.refSubscriptionMergedTodolist = this.mergedTodolists.subscribe(todolists => {
-            // this.mergedTodolists.subscribe(todolists => {
-            console.log('mergedtodolist : this.initLatestOwnerTodolist = ', this.initLatestOwnerTodolist);
-            this.initLatestOwnerTodolist = todolists[0];
+            /**
+             * Each query is used to Create an observable containing an
+             * array of todolist Model
+             * (todolist data are parsed using convertSnapshot inside convertQuery)
+             *
+             */
+            this.todolists = this.todolistsQueries.map((query => {
+                const res = this.convertQuery(query);
+                return res;
+            }));
+            /**
+             * Merge all observables from todolists
+             * Contains an observable of an array containing the 3 arrays todolists
+             * (owner arr., allowR arr., allowW arr.)
+             */
+            this.mergedTodolists = combineLatest(this.todolists);
+            /**
+             * Used for sharing datas between Todoslist and shared todolist
+             * (snapshot not triggered when using redirection)
+             */
+            console.log("BEFORE MERGED TODOLIST");
+            this.refSubscriptionMergedTodolist = this.mergedTodolists.subscribe(todolists => {
+                // this.mergedTodolists.subscribe(todolists => {
+                console.log('mergedtodolist : this.initLatestOwnerTodolist = ', this.initLatestOwnerTodolist);
+                this.initLatestOwnerTodolist = todolists[0];
 
-            const allowReadTodolist = todolists[1];
-            const allowWriteTodolist = todolists[2];
+                const allowReadTodolist = todolists[1];
+                const allowWriteTodolist = todolists[2];
 
-            // Concat and Merge read and write array and then remove duplicated elements (if both read/write)
-            this.initLatestReadWriteTodolist = Array.from(allowReadTodolist
-                .concat(allowReadTodolist, allowWriteTodolist)
-                .reduce((m, t) => m.set(t.name, t), new Map()).values());
-    });
-    }
-    catch (e) {
-        console.log('error : ' , e.message());
-    }
+                // Concat and Merge read and write array and then remove duplicated elements (if both read/write)
+                this.initLatestReadWriteTodolist = Array.from(allowReadTodolist
+                    .concat(allowReadTodolist, allowWriteTodolist)
+                    .reduce((m, t) => m.set(t.name, t), new Map()).values());
+            });
+        } catch (e) {
+            console.log('error : ', e);
+        }
     }
 
     /**
@@ -115,7 +116,7 @@ export class TodoslistService {
      */
     convertSnapshots<T>(snaps) {
         return <T[]>snaps.map(snap => {
-            console.log ("conversnapshot, id " , snap.payload.doc.data());
+            console.log("conversnapshot, id ", snap.payload.doc.data());
             return {
                 id: snap.payload.doc.id,
                 ...snap.payload.doc.data()
@@ -126,9 +127,9 @@ export class TodoslistService {
     /**
      * return todolist based on id
      */
-    getTodolist(id:string):Observable<Todolist> {
+    getTodolist(id: string): Observable<Todolist> {
 
-        const query = this.db.collection<Todolist>('list',ref =>
+        const query = this.db.collection<Todolist>('list', ref =>
             ref.where(firebase.firestore.FieldPath.documentId(), '==', id));
         const res = this.convertQuery(query).pipe(
             map(todolists => todolists.find(todolist => todolist.id === id)));
@@ -140,7 +141,7 @@ export class TodoslistService {
      * return observable of the 3 arrays (owner, allowR, allowR)
      */
     get(): Observable<Array<Array<Todolist>>> {
-        console.log ("get mergetodolist : ", this.mergedTodolists);
+        console.log("get mergetodolist : ", this.mergedTodolists);
         return this.mergedTodolists;
     }
 
@@ -172,6 +173,7 @@ export class TodoslistService {
     addTodo(todo: Todo, todolistID: string) {
         return this.todolistsCollection.doc(todolistID).collection('item').add(todo);
     }
+
     updateTodo(todo: Todo, todoID: string, todolistID: string) {
         this.todolistsCollection.doc(todolistID).collection('item').doc(todoID).update(todo);
     }
