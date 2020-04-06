@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from 'angularfire2/firestore';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, Subscription} from 'rxjs';
 import {flatMap, map} from 'rxjs/operators';
 import {Todolist} from "../model/todolist";
 import {Todo} from "../model/todo";
@@ -22,17 +22,14 @@ export class TodoslistService {
     private user:User;
     private initLatestReadWriteTodolist: Array<Todolist>;
     private initLatestOwnerTodolist: Array<Todolist>;
+    private refSubscriptionMergedTodolist: Subscription;
+    private refSubscriptionAllSnapshots: any;
 
+    // TODO important ! try to move constructor content inside init method called from page component (ex: todoslist)
     constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
-        this.user = afAuth.auth.currentUser; // TODO move inside if
-        /** TODO
-         if (user) {
-            // User is signed in.
-        } else {
-            // No user is signed in.
-        }
-         */
-
+        try {
+        this.user = afAuth.auth.currentUser;
+        console.log('user.uid =', this.user.uid);
         // Used to communicate with DB (for CRUD operations (good practice ?)
         this.todolistsCollection = db.collection<Todolist>('list');
 
@@ -49,6 +46,7 @@ export class TodoslistService {
             this.allowWriteQuery
         ];
 
+
         /**
          * Each query is used to Create an observable containing an
          * array of todolist Model
@@ -59,7 +57,6 @@ export class TodoslistService {
             const res = this.convertQuery(query);
             return res;
         }));
-
         /**
          * Merge all observables from todolists
          * Contains an observable of an array containing the 3 arrays todolists
@@ -70,7 +67,10 @@ export class TodoslistService {
          * Used for sharing datas between Todoslist and shared todolist
          * (snapshot not triggered when using redirection)
          */
-        this.mergedTodolists.subscribe(todolists => {
+        console.log("BEFORE MERGED TODOLIST");
+        this.refSubscriptionMergedTodolist = this.mergedTodolists.subscribe(todolists => {
+            // this.mergedTodolists.subscribe(todolists => {
+            console.log('mergedtodolist : this.initLatestOwnerTodolist = ', this.initLatestOwnerTodolist);
             this.initLatestOwnerTodolist = todolists[0];
 
             const allowReadTodolist = todolists[1];
@@ -82,6 +82,10 @@ export class TodoslistService {
                 .reduce((m, t) => m.set(t.name, t), new Map()).values());
     });
     }
+    catch (e) {
+        console.log('error : ' , e.message());
+    }
+    }
 
     /**
      * return an observable of todolist
@@ -90,8 +94,8 @@ export class TodoslistService {
      * @param query : firestoreCollection reference
      */
     convertQuery(query: AngularFirestoreCollection<Todolist>): Observable<Array<Todolist>> {
-
-        return query.snapshotChanges().pipe(
+        // this.refSubscriptionAllSnapshots.push(query.snapshotChanges());
+        let res: Observable<Array<Todolist>> = query.snapshotChanges().pipe(
             map(this.convertSnapshots), // data of each todolist
             map((allTodolistDatas: Todolist[]) => allTodolistDatas.map(allTodolistDatas => query.doc(allTodolistDatas.id).collection<Todo>('item').snapshotChanges().pipe( // rename parameter to todolistDatas ?
                 map(this.convertSnapshots),
@@ -101,6 +105,7 @@ export class TodoslistService {
             ),
             flatMap(combined => combineLatest(combined))
         );
+        return res;
     }
 
     /**
@@ -110,6 +115,7 @@ export class TodoslistService {
      */
     convertSnapshots<T>(snaps) {
         return <T[]>snaps.map(snap => {
+            console.log ("conversnapshot, id " , snap.payload.doc.data());
             return {
                 id: snap.payload.doc.id,
                 ...snap.payload.doc.data()
@@ -134,7 +140,15 @@ export class TodoslistService {
      * return observable of the 3 arrays (owner, allowR, allowR)
      */
     get(): Observable<Array<Array<Todolist>>> {
+        console.log ("get mergetodolist : ", this.mergedTodolists);
         return this.mergedTodolists;
+    }
+
+    /**
+     * used for unsubscribe when logged out
+     */
+    getRefSubscriptionMergedTodolist(): Subscription {
+        return this.refSubscriptionMergedTodolist;
     }
 
     /**
