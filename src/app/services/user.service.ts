@@ -65,6 +65,10 @@ return this.users;
             this.afAuth.auth.currentUser.updatePassword(password)
         ]);
     }
+
+    addUser(user:UserDB) {
+        this.usersCollection.add(user);
+    }
 }
 
 /**

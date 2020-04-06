@@ -37,8 +37,9 @@ export class SignupPage {
                 // So we must add ghost data for triggering observable before add true datas
                 this.listService.init();
                 this.listService.addTodolist({name: "", todos: [], allowRead: [uid], allowWrite: [uid], owner: uid}).then(() => {
+                this.userService.init();
                 this.userService.editUserName(this.displayName).then(() => {
-                    this
+                    this.userService.addUser({name: this.displayName, uid});
                     this.error = null
                     this.router.navigate(['']);
                 }).catch(err => {
