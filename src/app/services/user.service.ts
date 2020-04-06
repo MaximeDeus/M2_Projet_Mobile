@@ -6,7 +6,7 @@ import {Todolist} from "../model/todolist";
 import {flatMap, map} from "rxjs/operators";
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore";
 import {Todo} from "../model/todo";
-import {UserDB} from "../model/user";
+import {UserDB} from "../model/userDB";
 
 @Injectable({
     providedIn: 'root'
