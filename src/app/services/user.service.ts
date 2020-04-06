@@ -1,18 +1,42 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from "@angular/fire/auth";
 import {User} from "firebase";
-import {Observable} from "rxjs";
+import {combineLatest, Observable} from "rxjs";
 import {Todolist} from "../model/todolist";
+import {flatMap, map} from "rxjs/operators";
+import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore";
+import {Todo} from "../model/todo";
+import {UserDB} from "../model/user";
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
-    constructor(public afAuth: AngularFireAuth) {
+    private usersCollection: AngularFirestoreCollection<UserDB>;
+    private users: Observable<Array<UserDB>>;
+    constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
+    }
+    init(){
+        this.usersCollection = this.db.collection<UserDB>('users');
+
+        this.users = this.usersCollection.snapshotChanges().pipe(
+            map(this.convertSnapshots));
+    }
+    convertSnapshots(snaps) {
+        return snaps.map(snap => {
+            return {
+                id: snap.payload.doc.id,
+                ...snap.payload.doc.data()
+            };
+        });
     }
 
     get(): User {
         return this.afAuth.auth.currentUser;
+    }
+
+    getUsers(): Observable<Array<UserDB>> {
+return this.users;
     }
 
     login(email, password) {
