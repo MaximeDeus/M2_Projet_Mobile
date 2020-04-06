@@ -202,9 +202,11 @@ export class TodoslistPage implements OnInit, OnDestroy {
                     }
                 }, {
                     text: 'Ok',
-                    handler: () => {
-                        console.log('Confirm Ok');
-                        // TODO update todolist allow read array
+                    handler: data => {
+                       {
+                           todolist.allowRead = data;
+                            this.listService.updateTodolist(todolist);
+                        }
                     }
                 }
             ]
