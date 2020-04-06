@@ -54,6 +54,17 @@ export class TodoslistPage implements OnInit, OnDestroy {
             this.ownerTodolist = todolists[0];
             this.allowReadTodolist = todolists[1];
             this.allowWriteTodolist = todolists[2];
+            console.log('owner todolist: ', this.ownerTodolist);
+            this.ownerTodolist = this.ownerTodolist.filter(list => list.name.length !== 0);
+            console.log('owner todolist filtered: ', this.ownerTodolist);
+            console.log('read todolist: ', this.allowReadTodolist);
+            this.allowReadTodolist = this.allowReadTodolist.filter(list => list.name.length !== 0);
+            console.log('read todolist filtered: ', this.allowReadTodolist);
+            console.log('write  todolist: ', this.allowWriteTodolist);
+            this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
+            console.log('write todolist filtered: ', this.allowWriteTodolist);
+
+
 
             // Merge read and write array and then remove duplicated elements (if both read/write)
             this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
