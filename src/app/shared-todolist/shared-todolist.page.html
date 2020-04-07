@@ -11,6 +11,7 @@
             <ion-col class="ion-align-self-center" size-md="6" size-lg="5" size-xs="12">
                 <div class="ion-text-center">
                 </div>
+                <h3>Shared with me</h3>
                 <div class="ion-padding">
                     <ion-item-sliding *ngFor="let todolist of allowReadWriteTodolist ; let i1 = index" [attr.data-index]="i1">
                         <ion-item [color]="isCompleted(todolist)?'success':'warning'" class="ion-item-todolist" [routerLink]="'/todoslist/'+[todolist.id]" routerDirection="forward">
