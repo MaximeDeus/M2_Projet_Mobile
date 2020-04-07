@@ -177,6 +177,38 @@ export class TodoslistPage implements OnInit, OnDestroy {
         return todolist;
     }
 
+    async displayPromptUpdateTodolist(todolist:Todolist) {
+        let alert = await this.alertCtrl.create({
+            header: 'Update Todolist',
+
+            inputs: [
+                {
+                    name: 'name',
+                    placeholder: 'My todolist',
+                    value:todolist.name
+                }
+            ],
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                },
+                {
+                    text: 'Ok',
+                    handler: data => {
+                        if (data.name) {
+                            todolist.name = data.name;
+                            this.listService.updateTodolist(todolist);
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
     delete(todolist: Todolist) {
         this.listService.deleteTodolist(todolist);
     }
