@@ -53,54 +53,6 @@ export class SharedTodolistPage implements OnInit {
     })
   }
 
-  async displayPromptAddTodolist() {
-    let alert = await this.alertCtrl.create({
-      header: 'New Todolist',
-
-      inputs: [
-        {
-          name: 'name',
-          placeholder: 'Do my Homeworks',
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Create Todolist',
-          handler: data => {
-            if (data.name) {
-              const todolist = this.createTodolist(data.name);
-              this.listService.addTodolist(todolist).then(res => {
-              })
-            } else {
-              return false;
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  private createTodolist(name: string): Todolist {
-    const todolist: Todolist =
-        {
-          allowRead: [],
-          allowWrite: [],
-          name: name,
-          owner: this.currentUser.uid,
-          todos: []
-        }
-    return todolist;
-  }
-
-  delete(todolist: Todolist){
-    this.listService.deleteTodolist(todolist);
-  }
-
   isCompleted(todolist: Todolist) {
     return todolist.todos.every(todo => todo.isDone);
   }
@@ -108,5 +60,13 @@ export class SharedTodolistPage implements OnInit {
   countTodoDone(todolist: Todolist){
     return todolist.todos.filter(todo => todo.isDone).length;
   }
+// TODO quand logout, setter var à undefined (pour le rafraichissement)
+  // TODO ajouter icone read/write
+  // TODO ajouter nom owner
+  // TODO metre à jour vue todo
+  // TODO rafraichir vue quand changement util.
+  // TODO nettoyer les unsubscribe
+  // TODO essayer corriger menu
+  // TODO nettoyer code
 
 }
