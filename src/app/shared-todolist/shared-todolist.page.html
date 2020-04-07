@@ -24,6 +24,9 @@
                             <ion-item-option color="light" (click)="displayPromptAboutTodolist(todolist)">
                                 <ion-icon slot="top" name="information-circle-outline"></ion-icon>
                             </ion-item-option>
+                        <ion-item-option *ngIf="isAllowWrite(todolist)" color="dark" (click)="displayPromptUpdateTodolist(todolist)">
+                            <ion-icon slot="top" name="document"></ion-icon>
+                        </ion-item-option>
                         </ion-item-options>
                     </ion-item-sliding>
                 </div>
