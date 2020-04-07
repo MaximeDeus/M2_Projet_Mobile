@@ -16,9 +16,6 @@ import {UserDB} from "../model/userDB";
 export class TodoslistPage implements OnInit, OnDestroy {
     private todolists$: Observable<Array<Array<Todolist>>>;
     private ownerTodolist: Array<Todolist>;
-    private allowReadTodolist: Array<Todolist>;
-    private allowWriteTodolist: Array<Todolist>;
-    private allowReadWriteTodolist: Array<Todolist>;
     private currentUser: User;
     private subscriptionTodolists$: Subscription;
     private subscriptionUsersObservable: Subscription;
@@ -47,22 +44,14 @@ export class TodoslistPage implements OnInit, OnDestroy {
         this.todolists$ = this.listService.get();
         this.subscriptionTodolists$ = this.todolists$.subscribe(todolists => {
             this.ownerTodolist = todolists[0];
-            this.allowReadTodolist = todolists[1];
-            this.allowWriteTodolist = todolists[2];
             this.ownerTodolist = this.ownerTodolist.filter(list => list.name.length !== 0);
-            this.allowReadTodolist = this.allowReadTodolist.filter(list => list.name.length !== 0);
-            this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
-
-            // Merge read and write array and then remove duplicated elements (if both read/write)
-            this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
-                .concat(this.allowReadTodolist, this.allowWriteTodolist)
-                .reduce((m, t) => m.set(t.name, t), new Map()).values());
             })
     }
 
     ngOnDestroy(): void {
         this.subscriptionTodolists$.unsubscribe();
         this.subscriptionUsersObservable.unsubscribe();
+        this.ownerTodolist = null;
     }
 
 
@@ -81,16 +70,7 @@ export class TodoslistPage implements OnInit, OnDestroy {
             this.todolists$ = this.listService.get();
             this.subscriptionTodolists$ = this.todolists$.subscribe(todolists => {
                 this.ownerTodolist = todolists[0];
-                this.allowReadTodolist = todolists[1];
-                this.allowWriteTodolist = todolists[2];
                 this.ownerTodolist = this.ownerTodolist.filter(list => list.name.length !== 0);
-                this.allowReadTodolist = this.allowReadTodolist.filter(list => list.name.length !== 0);
-                this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
-
-                // Merge read and write array and then remove duplicated elements (if both read/write)
-                this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
-                    .concat(this.allowReadTodolist, this.allowWriteTodolist)
-                    .reduce((m, t) => m.set(t.name, t), new Map()).values());
                 })
     }}
 

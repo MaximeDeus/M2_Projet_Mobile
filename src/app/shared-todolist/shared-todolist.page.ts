@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {Observable} from "rxjs";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Observable, Subscription} from "rxjs";
 import {Todolist} from "../model/todolist";
 import {User} from "firebase";
 import {TodoslistService} from "../services/todoslist.service";
@@ -12,16 +12,17 @@ import {UserDB} from "../model/userDB";
   templateUrl: './shared-todolist.page.html',
   styleUrls: ['./shared-todolist.page.scss'],
 })
-export class SharedTodolistPage implements OnInit {
+export class SharedTodolistPage implements OnInit, OnDestroy {
 
   private todolists$: Observable<Array<Array<Todolist>>>;
-  private ownerTodolist: Array<Todolist>;
   private allowReadTodolist: Array<Todolist>;
   private allowWriteTodolist: Array<Todolist>;
   private allowReadWriteTodolist: Array<Todolist>;
   private currentUser: User;
   private usersObservable: Observable<Array<UserDB>>;
   private users: Array<UserDB>;
+  private subscriptionTodolists$: Subscription;
+  private subscriptionUsersObservable: Subscription;
 
 
   constructor(private listService: TodoslistService,
@@ -36,18 +37,15 @@ export class SharedTodolistPage implements OnInit {
     this.userService.init();
     this.currentUser = this.userService.get();
     this.usersObservable = this.userService.getUsers();
-    this.usersObservable.subscribe(users => {
+    this.subscriptionUsersObservable = this.usersObservable.subscribe(users => {
       this.users = users;
     })
     this.listService.init();
     this.todolists$ = this.listService.get();
     this.allowReadWriteTodolist = this.listService.getLatestReadWriteTodolist();
-    this.todolists$.subscribe(todolists => {
-      this.ownerTodolist = todolists[0];
+    this.subscriptionTodolists$ = this.todolists$.subscribe(todolists => {
       this.allowReadTodolist = todolists[1];
       this.allowWriteTodolist = todolists[2];
-
-      this.ownerTodolist = this.ownerTodolist.filter(list => list.name.length !== 0);
       this.allowReadTodolist = this.allowReadTodolist.filter(list => list.name.length !== 0);
       this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
 
@@ -55,11 +53,13 @@ export class SharedTodolistPage implements OnInit {
       this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
           .concat(this.allowReadTodolist, this.allowWriteTodolist)
           .reduce((m, t) => m.set(t.name, t), new Map()).values());
-      console.log('this.ownerTodolist : ', JSON.stringify(this.ownerTodolist));
-      console.log('allowReadTodolist : ', JSON.stringify(this.allowReadTodolist));
-      console.log('this.allowWriteTodolist : ', JSON.stringify(this.allowWriteTodolist));
-      console.log('this.allowReadWriteTodolist : ', JSON.stringify(this.allowReadWriteTodolist));
     })
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionTodolists$.unsubscribe();
+    this.subscriptionUsersObservable.unsubscribe();
+    this.allowReadWriteTodolist = null;
   }
 
   isCompleted(todolist: Todolist) {
