@@ -17,8 +17,8 @@
                             <ion-label>
                                 <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
                             </ion-label>
-                            <ion-icon name="eye"></ion-icon>
-                            <span>  {{todolist.owner}} {{countTodoDone(todolist)}}/{{todolist.todos.length}} todos</span>
+                            <ion-icon [name]="isAllowWrite(todolist)?'brush':'eye'"></ion-icon>
+                            <span>{{countTodoDone(todolist)}}/{{todolist.todos.length}} todos</span>
                         </ion-item>
                         <ion-item-options side="end">
                             <ion-item-option color="light" (click)="displayPromptAboutTodolist(todolist)">

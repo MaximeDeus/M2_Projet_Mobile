@@ -70,8 +70,8 @@ export class SharedTodolistPage implements OnInit {
     return todolist.todos.filter(todo => todo.isDone).length;
   }
 // TODO quand logout, setter var à undefined (pour le rafraichissement)
-  // TODO ajouter icone read/write
-  // TODO ajouter nom owner
+  // TODO ajouter icone read/write OK
+  // TODO ajouter nom owner OK
   // TODO metre à jour vue todo
   // TODO rafraichir vue quand changement util.
   // TODO nettoyer les unsubscribe
@@ -88,4 +88,8 @@ export class SharedTodolistPage implements OnInit {
 
       await alert.present();
     }
+
+  isAllowWrite(todolist: Todolist) {
+    return todolist.allowWrite.filter(uid => uid == this.currentUser.uid).length > 0;
+  }
 }
