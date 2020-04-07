@@ -5,6 +5,7 @@ import {User} from "firebase";
 import {TodoslistService} from "../services/todoslist.service";
 import {UserService} from "../services/user.service";
 import {AlertController} from "@ionic/angular";
+import {UserDB} from "../model/userDB";
 
 @Component({
   selector: 'app-shared-todolist',
@@ -19,28 +20,36 @@ export class SharedTodolistPage implements OnInit {
   private allowWriteTodolist: Array<Todolist>;
   private allowReadWriteTodolist: Array<Todolist>;
   private currentUser: User;
+  private usersObservable: Observable<Array<UserDB>>;
+  private users: Array<UserDB>;
 
 
   constructor(private listService: TodoslistService,
               private userService: UserService,
               public alertCtrl: AlertController,
-  ) {
-
-    this.currentUser = userService.get();
-    console.log("Current user : " + JSON.stringify(this.currentUser));
-  }
+  ) {}
 
   /**
    * Get an observable and set/update the 3 todolists (owner, allowR, allowW)
    */
   ngOnInit(): void {
-
+    this.userService.init();
+    this.currentUser = this.userService.get();
+    this.usersObservable = this.userService.getUsers();
+    this.usersObservable.subscribe(users => {
+      this.users = users;
+    })
+    this.listService.init();
     this.todolists$ = this.listService.get();
     this.allowReadWriteTodolist = this.listService.getLatestReadWriteTodolist();
     this.todolists$.subscribe(todolists => {
       this.ownerTodolist = todolists[0];
       this.allowReadTodolist = todolists[1];
       this.allowWriteTodolist = todolists[2];
+
+      this.ownerTodolist = this.ownerTodolist.filter(list => list.name.length !== 0);
+      this.allowReadTodolist = this.allowReadTodolist.filter(list => list.name.length !== 0);
+      this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
 
       // Merge read and write array and then remove duplicated elements (if both read/write)
       this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
@@ -69,4 +78,14 @@ export class SharedTodolistPage implements OnInit {
   // TODO essayer corriger menu
   // TODO nettoyer code
 
+  async displayPromptAboutTodolist(todolist: Todolist) {
+    let ownerTodolist = this.users.filter(user => user.uid == todolist.owner)[0].name;
+      const alert = await this.alertCtrl.create({
+        header: 'About',
+        message: 'Owner : ' + ownerTodolist,
+        buttons: ['OK']
+      });
+
+      await alert.present();
+    }
 }

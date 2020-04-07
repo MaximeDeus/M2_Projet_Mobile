@@ -17,11 +17,12 @@
                             <ion-label>
                                 <h2>{{ 'List n°' + (i1+1) + ' : ' +  todolist.name}}</h2>
                             </ion-label>
-                            <span> {{countTodoDone(todolist)}}/{{todolist.todos.length}} todos</span>
+                            <ion-icon name="eye"></ion-icon>
+                            <span>  {{todolist.owner}} {{countTodoDone(todolist)}}/{{todolist.todos.length}} todos</span>
                         </ion-item>
                         <ion-item-options side="end">
-                            <ion-item-option color="danger" (click)="delete(todolist)">
-                                <ion-icon slot="top" name="trash"></ion-icon>
+                            <ion-item-option color="light" (click)="displayPromptAboutTodolist(todolist)">
+                                <ion-icon slot="top" name="information-circle-outline"></ion-icon>
                             </ion-item-option>
                         </ion-item-options>
                     </ion-item-sliding>
