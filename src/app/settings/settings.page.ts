@@ -1,31 +1,44 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserService} from "../services/user.service";
 import {User} from "firebase";
 import {AlertController, ToastController} from "@ionic/angular";
+import {UserDB} from "../model/userDB";
+import {Observable} from "rxjs";
 
 @Component({
     selector: 'app-settings',
     templateUrl: './settings.page.html',
     styleUrls: ['./settings.page.scss'],
 })
-export class SettingsPage{
+export class SettingsPage implements OnInit{
+
     user: User;
+    userDB:UserDB;
     displayName: string | null;
     email: string | null;
-    photoURL: string | null; // TODO probably update
     newPassword: string | null;
     confirmNewPassword: string | null;
     error: Error = null;
+    private usersObservable: Observable<Array<UserDB>>;
     constructor(
         private userService: UserService,
         public alertCtrl: AlertController,
         public toastController: ToastController)
+    {}
+    ngOnInit(): void
     {
+        this.userService.init();
         this.user = this.userService.get();
         this.displayName = this.user.displayName;
         this.email = this.user.email;
         this.newPassword = '';
         this.confirmNewPassword = '';
+
+        // Used for updating users collection when changing displayName
+        this.usersObservable = this.userService.getUsers();
+        this.usersObservable.subscribe(users => {
+            this.userDB = users.filter(user => user.uid === this.user.uid)[0];
+        })
     }
 
     checkUserInput() {
@@ -49,15 +62,20 @@ export class SettingsPage{
                     userCredential,
                     this.displayName,
                     this.email,
-                    this.photoURL,
-                    this.newPassword
+                    password
                 ).then(() => {
+                    this.userService.editUserDB({
+                        id: this.userDB.id,
+                        name: this.displayName, // Update displayName
+                        uid: this.userDB.uid
+                        }
+                    ).then(() => {
                     console.log('after success edit : ', JSON.stringify(this.user));
                     // redirect if success
                     this.error = null;
                     // TODO display green popup success message (Your account were successfully updated :) )
                     this.displayToastSuccess();
-                }).catch(err => { // Display message if any issue during authentication
+                })}).catch(err => { // Display message if any issue during authentication
                     console.log('after error edit : ', JSON.stringify(this.user));
                     this.error = err;
                     // TODO display green popup success message (Oups, something went wrong, please check your entries)
