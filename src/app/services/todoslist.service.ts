@@ -75,8 +75,12 @@ export class TodoslistService {
                 console.log('mergedtodolist : this.initLatestOwnerTodolist = ', this.initLatestOwnerTodolist);
                 this.initLatestOwnerTodolist = todolists[0];
 
-                const allowReadTodolist = todolists[1];
-                const allowWriteTodolist = todolists[2];
+                let allowReadTodolist = todolists[1];
+                let allowWriteTodolist = todolists[2];
+
+                this.initLatestOwnerTodolist = this.initLatestOwnerTodolist.filter(list => list.name.length !== 0);
+                allowReadTodolist = allowReadTodolist.filter(list => list.name.length !== 0);
+                allowWriteTodolist = allowWriteTodolist.filter(list => list.name.length !== 0);
 
                 // Concat and Merge read and write array and then remove duplicated elements (if both read/write)
                 this.initLatestReadWriteTodolist = Array.from(allowReadTodolist
