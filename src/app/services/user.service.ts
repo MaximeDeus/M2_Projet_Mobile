@@ -39,6 +39,12 @@ export class UserService {
 return this.users;
     }
 
+    getUserById(id:string): Observable<UserDB>{
+        return this.db.collection<UserDB>('users', ref =>
+            ref.where('owner', '==', id)).snapshotChanges().pipe(
+            map(this.convertSnapshots));
+    }
+
     login(email, password) {
         return this.afAuth.auth.signInWithEmailAndPassword(email, password);
     }
@@ -56,13 +62,17 @@ return this.users;
         return this.afAuth.auth.currentUser.updateProfile({displayName: displayName});
     }
 
-    editUser(userCredential, displayName, email, photoURL, password) {
+    editUserDB(user:UserDB) {
+        return this.usersCollection.doc(user.id).update(user);
+    }
+
+    editUser(userCredential, displayName, email, password) {
         // return userCredential.user.updateEmail('newyou@domain.com');
         // this.afAuth.auth.currentUser.updateProfile({displayName:displayName});
         return Promise.all([
-            this.afAuth.auth.currentUser.updateProfile({displayName: displayName}),
-            this.afAuth.auth.currentUser.updateEmail(email),
-            this.afAuth.auth.currentUser.updatePassword(password)
+            userCredential.user.updateProfile({displayName: displayName}),
+      //       userCredential.user.updateEmail(email),
+      //      userCredential.user.updatePassword(password)
         ]);
     }
 
