@@ -69,14 +69,6 @@ export class SharedTodolistPage implements OnInit {
   countTodoDone(todolist: Todolist){
     return todolist.todos.filter(todo => todo.isDone).length;
   }
-// TODO quand logout, setter var à undefined (pour le rafraichissement)
-  // TODO ajouter icone read/write OK
-  // TODO ajouter nom owner OK
-  // TODO metre à jour vue todo
-  // TODO rafraichir vue quand changement util.
-  // TODO nettoyer les unsubscribe
-  // TODO essayer corriger menu
-  // TODO nettoyer code
 
   async displayPromptAboutTodolist(todolist: Todolist) {
     let ownerTodolist = this.users.filter(user => user.uid == todolist.owner)[0].name;

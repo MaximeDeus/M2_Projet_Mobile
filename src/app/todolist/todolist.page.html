@@ -34,24 +34,4 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <!--
-  <ion-list>
-    <ion-item-sliding *ngFor="let todo of this.todolist.todos ; let i = index" [attr.data-index]="i">
-      <ion-item [color]="todo.isDone?'success':'warning'">
-        <ion-label>
-          <h2>{{ 'Todo n°' + (i+1) + ' : ' +  todo.title}}</h2>
-        </ion-label>
-        <ion-checkbox [(ngModel)]="todo.isDone" (click)="updateTodo(todo,todo.id)"></ion-checkbox>
-      </ion-item>
-      <ion-item-options side="end">
-      <ion-item-option color="danger" (click)="delete(todo)">
-            <ion-icon slot="top" name="trash"></ion-icon>
-      </ion-item-option>
-    </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
-  <section>
-    <ion-button (click)="displayPromptAddTodo()">New todo</ion-button>
-  </section>
-  -->
 </ion-content>
