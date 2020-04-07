@@ -75,8 +75,41 @@ export class TodolistPage implements OnInit {
     return todo;
   }
 
-  updateTodo(todo: Todo, todoID: string) {
+  updateTodoCheckBox(todo: Todo) {
+    // TODO check if owner or allowed write user
     todo.isDone = !todo.isDone;
-    this.todolistService.updateTodo(todo,todoID,this.id);
+    this.todolistService.updateTodo(todo,this.id);
+  }
+
+  async displayPromptUpdateTodo(todo:Todo) {
+    let alert = await this.alertCtrl.create({
+      header: 'Update Todo',
+
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'My todo',
+          value:todo.title
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Ok',
+          handler: data => {
+            if (data.name) {
+              todo.title = data.name;
+              this.todolistService.updateTodo(todo,this.id);
+            } else {
+              return false;
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }
