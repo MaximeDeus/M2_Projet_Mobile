@@ -81,32 +81,51 @@ export class TodoslistPage implements OnInit, OnDestroy {
         this.subscriptionTodolists$.unsubscribe();
     }
 
-    /**
-     ionViewWillEnter(){
-        console.log("IONVIEWWILLENTER");
-        this.currentUser = this.userService.get();
-        console.log("Current user : " + JSON.stringify(this.currentUser));
-        this.ownerTodolist = this.listService.getLatestOwnerTodolist();
-        console.log('owner todolist : ' , this.ownerTodolist);
-        this.todolists$ = this.listService.get();
-        console.log ('observable todolist : ' , this.todolists$);
-        this.subscription = this.todolists$.subscribe(todolists => {
-            console.log('SUBSCRIBE');
-            this.ownerTodolist = todolists[0];
-            this.allowReadTodolist = todolists[1];
-            this.allowWriteTodolist = todolists[2];
 
-            // Merge read and write array and then remove duplicated elements (if both read/write)
-            this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
-                .concat(this.allowReadTodolist, this.allowWriteTodolist)
-                .reduce((m, t) => m.set(t.name, t), new Map()).values());
-            console.log('this.ownerTodolist : ', JSON.stringify(this.ownerTodolist));
-            console.log('allowReadTodolist : ', JSON.stringify(this.allowReadTodolist));
-            console.log('this.allowWriteTodolist : ', JSON.stringify(this.allowWriteTodolist));
-            console.log('this.allowReadWriteTodolist : ', JSON.stringify(this.allowReadWriteTodolist));
-        })
-    }
-     */
+     ionViewWillEnter(){
+        if (this.onInitState){
+            this.onInitState = false;
+        }
+        else{
+        console.log("IONVIEWWILLENTER");
+            this.userService.init();
+            this.currentUser = this.userService.get();
+            this.usersObservable = this.userService.getUsers();
+            this.usersObservable.subscribe(users => {
+                this.users = users;
+            })
+            this.listService.init();
+            console.log("Current user : " + JSON.stringify(this.currentUser));
+            // this.ownerTodolist = this.listService.getLatestOwnerTodolist();
+            console.log('owner todolist : ', this.ownerTodolist);
+            this.todolists$ = this.listService.get();
+            console.log('observable todolist : ', this.todolists$);
+            this.subscriptionTodolists$ = this.todolists$.subscribe(todolists => {
+                console.log('SUBSCRIBE');
+                this.ownerTodolist = todolists[0];
+                this.allowReadTodolist = todolists[1];
+                this.allowWriteTodolist = todolists[2];
+                console.log('owner todolist: ', this.ownerTodolist);
+                this.ownerTodolist = this.ownerTodolist.filter(list => list.name.length !== 0);
+                console.log('owner todolist filtered: ', this.ownerTodolist);
+                console.log('read todolist: ', this.allowReadTodolist);
+                this.allowReadTodolist = this.allowReadTodolist.filter(list => list.name.length !== 0);
+                console.log('read todolist filtered: ', this.allowReadTodolist);
+                console.log('write  todolist: ', this.allowWriteTodolist);
+                this.allowWriteTodolist = this.allowWriteTodolist.filter(list => list.name.length !== 0);
+                console.log('write todolist filtered: ', this.allowWriteTodolist);
+
+                // Merge read and write array and then remove duplicated elements (if both read/write)
+                this.allowReadWriteTodolist = Array.from(this.allowReadTodolist
+                    .concat(this.allowReadTodolist, this.allowWriteTodolist)
+                    .reduce((m, t) => m.set(t.name, t), new Map()).values());
+                console.log('this.ownerTodolist : ', JSON.stringify(this.ownerTodolist));
+                console.log('allowReadTodolist : ', JSON.stringify(this.allowReadTodolist));
+                console.log('this.allowWriteTodolist : ', JSON.stringify(this.allowWriteTodolist));
+                console.log('this.allowReadWriteTodolist : ', JSON.stringify(this.allowReadWriteTodolist));
+            })
+    }}
+
     /**
      ionViewWillLeave(){
         console.log("IONVIEWWILLLEAVE");
