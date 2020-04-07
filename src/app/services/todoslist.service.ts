@@ -178,8 +178,8 @@ export class TodoslistService {
         return this.todolistsCollection.doc(todolistID).collection('item').add(todo);
     }
 
-    updateTodo(todo: Todo, todoID: string, todolistID: string) {
-        this.todolistsCollection.doc(todolistID).collection('item').doc(todoID).update(todo);
+    updateTodo(todo: Todo, todolistID: string) {
+        this.todolistsCollection.doc(todolistID).collection('item').doc(todo.id).update(todo);
     }
 
     deleteTodolist(todolist: Todolist) {
