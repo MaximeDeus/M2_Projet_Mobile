@@ -21,6 +21,7 @@ export class TodoslistPage implements OnInit, OnDestroy {
     private allowReadWriteTodolist: Array<Todolist>;
     private currentUser: User;
     private subscriptionTodolists$: Subscription;
+    private subscriptionUsersObservable: Subscription;
     private onInitState = true;
     private usersObservable: Observable<Array<UserDB>>;
     private users: Array<UserDB>;
@@ -40,7 +41,7 @@ export class TodoslistPage implements OnInit, OnDestroy {
         this.userService.init();
         this.currentUser = this.userService.get();
         this.usersObservable = this.userService.getUsers();
-        this.usersObservable.subscribe(users => {
+        this.subscriptionUsersObservable = this.usersObservable.subscribe(users => {
             this.users = users;
         })
         this.listService.init();
@@ -79,6 +80,7 @@ export class TodoslistPage implements OnInit, OnDestroy {
         console.log("NG ON DESTROY");
         console.log("closed : ", this.subscriptionTodolists$.closed);
         this.subscriptionTodolists$.unsubscribe();
+        this.subscriptionUsersObservable.unsubscribe();
     }
 
 
