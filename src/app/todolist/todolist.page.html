@@ -16,9 +16,9 @@
               <ion-label>
                 <h2>{{ 'Todo n°' + (i1+1) + ' : ' +  todo.title}}</h2>
               </ion-label>
-              <ion-checkbox [(ngModel)]="todo.isDone" (click)="updateTodoCheckBox(todo)"></ion-checkbox>
+              <ion-checkbox [(ngModel)]="todo.isDone" [disabled]="!isAllowWrite(todolist)" (click)="updateTodoCheckBox(todo)"></ion-checkbox>
             </ion-item>
-            <ion-item-options side="end">
+            <ion-item-options *ngIf="isAllowWrite(todolist)" side="end">
               <ion-item-option color="danger" (click)="delete(todo)">
                 <ion-icon slot="top" name="trash"></ion-icon>
               </ion-item-option>
@@ -28,7 +28,7 @@
             </ion-item-options>
           </ion-item-sliding>
         </div>
-        <div class="ion-padding">
+        <div class="ion-padding" *ngIf="isAllowWrite(todolist)">
           <ion-button size="large" expand="block"(click)="displayPromptAddTodo()">New todo</ion-button>
         </div>
       </ion-col>

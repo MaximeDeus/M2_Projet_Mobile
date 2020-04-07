@@ -4,6 +4,8 @@ import {ActivatedRoute,  Router} from "@angular/router";
 import {TodoslistService} from "../services/todoslist.service";
 import {Todo} from "../model/todo";
 import {AlertController} from "@ionic/angular";
+import {User} from "firebase";
+import {UserService} from "../services/user.service";
 
 @Component({
   selector: 'app-todolist',
@@ -20,10 +22,18 @@ export class TodolistPage implements OnInit {
     owner: "",
     todos : []}
 
-  constructor(private router: Router, private todolistService: TodoslistService , private route: ActivatedRoute,public alertCtrl: AlertController) {}
+  private currentUser: User;
+
+  constructor(
+      private router: Router,
+      private todolistService: TodoslistService ,
+      private route: ActivatedRoute,
+      private userService: UserService,
+      public alertCtrl: AlertController) {}
 
   ngOnInit() {
-
+    this.userService.init();
+    this.currentUser = this.userService.get();
     this.id = this.route.snapshot.paramMap.get('id');
     this.todolistService.getTodolist(this.id).subscribe(todolist => {
       console.log('value : ', JSON.stringify(todolist));
@@ -75,10 +85,16 @@ export class TodolistPage implements OnInit {
     return todo;
   }
 
+  isAllowWrite(todolist: Todolist) {
+    return todolist.allowWrite.filter(uid => uid == this.currentUser.uid).length > 0 ||
+        this.currentUser.uid == this.todolist.owner;
+  }
+
   updateTodoCheckBox(todo: Todo) {
-    // TODO check if owner or allowed write user
+    if (this.isAllowWrite(this.todolist)){
     todo.isDone = !todo.isDone;
     this.todolistService.updateTodo(todo,this.id);
+    }
   }
 
   async displayPromptUpdateTodo(todo:Todo) {
