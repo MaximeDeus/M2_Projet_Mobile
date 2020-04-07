@@ -24,8 +24,11 @@
                             <ion-item-option color="danger" (click)="delete(todolist)">
                                 <ion-icon slot="top" name="trash"></ion-icon>
                             </ion-item-option>
-                            <ion-item-option color="success" (click)="displayPromptAllowReadTodolist(todolist)">
+                            <ion-item-option color="light" (click)="displayPromptAllowReadTodolist(todolist)">
                                 <ion-icon slot="top" name="eye"></ion-icon>
+                            </ion-item-option>
+                            <ion-item-option color="dark" (click)="displayPromptAllowWriteTodolist(todolist)">
+                                <ion-icon slot="top" name="brush"></ion-icon>
                             </ion-item-option>
                         </ion-item-options>
                     </ion-item-sliding>

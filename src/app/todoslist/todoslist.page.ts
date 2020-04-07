@@ -170,17 +170,61 @@ export class TodoslistPage implements OnInit, OnDestroy {
         return todolist.todos.filter(todo => todo.isDone).length;
     }
 
-    buildInputRead(user: UserDB, todolist:Todolist) {
+    buildInputWrite(user: UserDB, todolist:Todolist) {
         // Can't share with ourself
         if (user.uid !== this.currentUser.uid){
-        const isSharedReadWithUser = todolist.allowRead.filter(uid => uid === user.uid).length > 0;
+        const isSharedWriteWithUser = todolist.allowWrite.filter(uid => uid === user.uid).length > 0;
         return {
             name:  user.name,
             type: 'checkbox',
             label: user.name,
             value: user.uid,
-            checked: isSharedReadWithUser
+            checked: isSharedWriteWithUser
         }
+        }
+        // will be filtered
+    }
+
+    async displayPromptAllowWriteTodolist(todolist:Todolist) {
+        console.log('hello world prompt write todolist');
+        const input:any = this.users.map((user) => this.buildInputWrite(user,todolist))
+            .filter(user => user !== undefined);
+        const alert = await this.alertCtrl.create({
+            header: 'Share Write with',
+            inputs: input,
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => {
+                        console.log('Confirm Cancel');
+                    }
+                }, {
+                    text: 'Ok',
+                    handler: data => {
+                       {
+                           todolist.allowWrite = data;
+                            this.listService.updateTodolist(todolist);
+                        }
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    buildInputRead(user: UserDB, todolist:Todolist) {
+        // Can't share with ourself
+        if (user.uid !== this.currentUser.uid){
+            const isSharedReadWithUser = todolist.allowRead.filter(uid => uid === user.uid).length > 0;
+            return {
+                name:  user.name,
+                type: 'checkbox',
+                label: user.name,
+                value: user.uid,
+                checked: isSharedReadWithUser
+            }
         }
         // will be filtered
     }
@@ -203,8 +247,8 @@ export class TodoslistPage implements OnInit, OnDestroy {
                 }, {
                     text: 'Ok',
                     handler: data => {
-                       {
-                           todolist.allowRead = data;
+                        {
+                            todolist.allowRead = data;
                             this.listService.updateTodolist(todolist);
                         }
                     }
